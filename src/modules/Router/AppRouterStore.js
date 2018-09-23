@@ -10,7 +10,6 @@ class AppRouterStore {
 
     @action
     handleTabClick = (e, { name }) => {
-        console.log('switching to tab ' + name);
         this.activeTab = name;
     }
 

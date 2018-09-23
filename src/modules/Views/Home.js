@@ -5,6 +5,7 @@ import { Container, Header, Button } from 'semantic-ui-react';
 
 @observer
 export default class Home extends React.Component {
+
     render() {
         return (
             <div>
@@ -13,7 +14,7 @@ export default class Home extends React.Component {
                 <Header> Swag</Header>
                 <Header> Swag</Header>
                 <Header> Swag</Header>
-                <Button success content="Swag"/>
+                <Button content="Swag"/>
                 </Container>
             </div>
         )

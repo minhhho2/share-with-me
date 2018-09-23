@@ -3,3 +3,11 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.main-color {
+  background-color: #006080
+}
+
+.secondary-color {
+  background-color: #00394d
+}

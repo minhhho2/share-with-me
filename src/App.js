@@ -16,11 +16,11 @@ export default class App extends React.Component {
 
 
         return (
-            <div className="App">
+            <div className="App main-color" >
 
                 {/* Header for web app */}
                 <AppHeader />
-
+                
                 {/* Navigation bar  and routing for web app */}
                 <AppRouter />
 

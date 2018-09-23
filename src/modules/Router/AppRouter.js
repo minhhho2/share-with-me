@@ -11,6 +11,7 @@ import Error from '../Views/Error';
 // import store
 import AppRouterStore from './AppRouterStore';
 import Test from '../Views/Test';
+import Sector from '../Sector/Sector';
 
 @observer
 export default class AppRouter extends React.Component {
@@ -29,16 +30,23 @@ export default class AppRouter extends React.Component {
                 {/* Router for containing UI links and Url Routes */}
                 <BrowserRouter>
 
-                    <div className='text-center'>
+                    <div>
                         <Sticky>    {/* Allows scrollable nav bar */}
 
                             {/* semantic UI components for linking to url paths */}
-                            <Menu className='bg-light p-4' pointing secondary icon='labeled' >
+                            <Menu className='bg-info p-4' pointing secondary icon='labeled' >
                                 <Menu.Item
                                     name='home' active={activeTab === 'home'}
                                     icon={<Icon name='home' />}
                                     onClick={AppRouterStore.handleTabClick}
                                     as={Link} to='/'
+                                />
+
+                                <Menu.Item
+                                    name='sector' active={activeTab === 'sector'}
+                                    icon={<Icon name='home' />}
+                                    onClick={AppRouterStore.handleTabClick}
+                                    as={Link} to='/sector'
                                 />
 
                                 <Menu.Item
@@ -60,6 +68,7 @@ export default class AppRouter extends React.Component {
                         <br />
                         <Switch>
                             <Route exact path='/' component={Home} />
+                            <Route exact path='/sector' component={Sector} />
                             <Route exact path='/test' component={Test} />
                             <Route component={Error} />
                         </Switch>
