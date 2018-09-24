@@ -33,6 +33,7 @@ export default class AppFooter extends React.Component {
                     {clickers.map((click, index) => {
                         return <a key={index} href={click.href}> <i className={click.icon}></i></a>
                     })}
+                    
                 </Container>
             </div>
         )

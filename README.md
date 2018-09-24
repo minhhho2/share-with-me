@@ -1,5 +1,5 @@
 ## Share With Me
-Website that displays financial data in a readable format as well as providing a brief description of finance theory that I have picked up online and through education.
+Website that displays financial data in a readable format as well as providing a brief description of finance theory that I have picked up online and through education.  
 View the website at http://share-with-me.s3-website-ap-southeast-2.amazonaws.com
 
 ## Getting Started

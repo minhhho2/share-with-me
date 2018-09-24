@@ -10,11 +10,10 @@ export default class Home extends React.Component {
         return (
             <div>
                 <Container>
-                <Header> Swag</Header>
-                <Header> Swag</Header>
-                <Header> Swag</Header>
-                <Header> Swag</Header>
-                <Button content="Swag"/>
+                    
+                    <p>
+                        Website that portrays financial stock data in a readable and fun format as well as finance theory on relative to the stock market.
+                    </p>
                 </Container>
             </div>
         )
