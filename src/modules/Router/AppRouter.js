@@ -16,8 +16,7 @@ import SectorView from '../Sector/SectorView';
 export default class AppRouter extends React.Component {
 
     /* Set up initial states */
-    componentDidMount() {
-    }
+    componentDidMount() { AppRouterStore.setup(); }
 
     render() {
 
@@ -31,26 +30,26 @@ export default class AppRouter extends React.Component {
 
                     <div>
 
-                            {/* semantic UI components for linking to url paths */}
-                            <Menu className='p-4'>
-                                <Menu.Item
-                                    name='home' active={activeTab === 'home'}
-                                    onClick={AppRouterStore.handleTabClick}
-                                    as={Link} to='/'
-                                />
+                        {/* semantic UI components for linking to url paths */}
+                        <Menu size='massive'>
+                            <Menu.Item
+                                name='home' active={activeTab === 'home'}
+                                onClick={AppRouterStore.handleTabClick}
+                                as={Link} to='/'
+                            />
 
-                                <Menu.Item
-                                    name='sector' active={activeTab === 'sector'}
-                                    onClick={AppRouterStore.handleTabClick}
-                                    as={Link} to='/sector'
-                                />
+                            <Menu.Item
+                                name='sector' active={activeTab === 'sector'}
+                                onClick={AppRouterStore.handleTabClick}
+                                as={Link} to='/sector'
+                            />
 
-                                {/* 
+                            {/* 
                                     <MainMenu />
                                     <SecondaryMenu />
                                 */}
 
-                            </Menu>
+                        </Menu>
 
                         {/* Switch Component that holds Routes */}
                         <br />

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Header, Table } from 'semantic-ui-react';
 import SectorStore from './SectorStore';
+import _ from 'lodash';
 
 @observer
 export default class SectorView extends React.Component {
@@ -22,13 +23,16 @@ export default class SectorView extends React.Component {
 
 
 
-                <Table celled>
+                <Table celled inverted>
                     {/* render column names */}
                     <Table.Header>
                         <Table.Row>
                             {performanceTypes.map((types, index) => {
                                 return (
-                                    <Table.HeaderCell key={index}>{types}</Table.HeaderCell>
+                                    <Table.HeaderCell
+                                        key={index}
+                                        content={types}
+                                    />
                                 )
                             })}
                         </Table.Row>
