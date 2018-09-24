@@ -1,3 +1,25 @@
+## Share With Me
+Website that displays financial data in a readable format as well as providing a brief description of finance theory that I have picked up online and through education.
+
+## Getting Started
+
+### Clone
+Clone this repo to your local machine using https://github.com/minhhho2/share-with-me.git
+
+### Setup
+> Install npm packages
+``` shell
+$ npm install
+```
+
+## Features
+- Sector
+  - Displays sector growth and performance over different period of times for the US exchange.
+
+
+
+## Create React App
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
