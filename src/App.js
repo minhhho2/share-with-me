@@ -16,7 +16,7 @@ export default class App extends React.Component {
 
 
         return (
-            <div className="App main-color" >
+            <div className="App main-color">
 
                 {/* Header for web app */}
                 <AppHeader />

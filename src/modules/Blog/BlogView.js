@@ -8,6 +8,10 @@ export default class AppHeader extends React.Component {
         BlogStore.setup();
     }
 
+    onRedirectPost = (e) => {
+        console.log(e.target.id);
+        this.props.history.push('/blog/' + e.target.id);
+    }
     render() {
         const {posts} = BlogStore;
 
@@ -17,9 +21,9 @@ export default class AppHeader extends React.Component {
                 <Card.Group className='pl-5' itemsPerRow={5}>
 
 
-                    {posts.map((post, index) => {
+                    {posts.map((post) => {
                         return (
-                            <Card className='text-center' key={index}>
+                            <Card className='text-center' key={post.id}>
                                 <Card.Content>
                                     <Card.Header>{post.title}</Card.Header>
                                 </Card.Content>
@@ -29,7 +33,11 @@ export default class AppHeader extends React.Component {
                                 <Image src='https://cdn4.buysellads.net/uu/1/3386/1525189887-61450.png' />
                                 <Card.Content>
                                     <Card.Description>{post.description.substring(0, 100) + ' ... '}</Card.Description>
-                                    <Button className='m-3' content='VIEW FULL POST' />
+                                    <Button 
+                                        id={post.id}
+                                        className='m-3' content='VIEW FULL POST' 
+                                        onClick={this.onRedirectPost}
+                                        />
                                 </Card.Content>
 
                             </Card>
