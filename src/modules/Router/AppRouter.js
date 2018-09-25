@@ -11,6 +11,7 @@ import Error from '../Views/Error';
 // import store
 import AppRouterStore from './AppRouterStore';
 import SectorView from '../Sector/SectorView';
+import BlogView from '../Blog/BlogView';
 
 @observer
 export default class AppRouter extends React.Component {
@@ -44,6 +45,12 @@ export default class AppRouter extends React.Component {
                                 as={Link} to='/sector'
                             />
 
+                            <Menu.Item
+                                name='blog' active={activeTab === 'blog'}
+                                onClick={AppRouterStore.handleTabClick}
+                                as={Link} to='/blog'
+                            />
+
                             {/* 
                                     <MainMenu />
                                     <SecondaryMenu />
@@ -56,6 +63,7 @@ export default class AppRouter extends React.Component {
                         <Switch>
                             <Route exact path='/' component={Home} />
                             <Route exact path='/sector' component={SectorView} />
+                            <Route exact path='/blog' component={BlogView} />
                             <Route component={Error} />
                         </Switch>
                         <br />
