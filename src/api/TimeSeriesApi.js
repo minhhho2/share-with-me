@@ -13,7 +13,7 @@ class TimeSeriesApi {
     }
 
     get = (period, symbol, interval, outputSize) => {
-        //return axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=ASX:XJO&interval=60min&outputsize=full&apikey=${APIKEY}`);
+        // https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=ASX:XJO&interval=60min&outputsize=full&apikey=${APIKEY}
 
         return axios.get(`https://www.alphavantage.co/query?function=${period}&symbol=${symbol}&interval=${interval}&outputsize=${outputSize}&apikey=${APIKEY}`);
     }
