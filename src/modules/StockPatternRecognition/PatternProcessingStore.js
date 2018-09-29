@@ -4,7 +4,7 @@ import { observable } from 'mobx';
 
 class PatternProcessingStore {
 
-    @observable tester = 'swagger';
+    @observable tester = 'swaggerrs';
 
 
 }

@@ -13,6 +13,7 @@ import AppRouterStore from './AppRouterStore';
 import SectorView from '../Sector/SectorView';
 import BlogView from '../Blog/BlogView';
 import PostView from '../Blog/Post/PostView';
+import PatternProcessingView from '../StockPatternRecognition/PatternProcessingView';
 
 @observer
 export default class AppRouter extends React.Component {
@@ -52,6 +53,12 @@ export default class AppRouter extends React.Component {
                                 as={Link} to='/blog'
                             />
 
+                            <Menu.Item
+                                name='pattern' active={activeTab === 'pattern'}
+                                onClick={AppRouterStore.handleTabClick}
+                                as={Link} to='/pattern'
+                            />
+
                             {/* 
                                     <MainMenu />
                                     <SecondaryMenu />
@@ -66,6 +73,8 @@ export default class AppRouter extends React.Component {
                             <Route exact path='/sector' component={SectorView} />
                             <Route exact path='/blog' component={BlogView} />
                             <Route exact path="/blog/:id" component={PostView} />
+
+                            <Route exact path="/pattern" component={PatternProcessingView} />
 
                             <Route component={Error} />
                         </Switch>
