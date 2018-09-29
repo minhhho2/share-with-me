@@ -26,6 +26,9 @@ export default class Home extends React.Component {
                     <p>
                         Website that portrays financial stock data in a readable and fun format as well as finance theory on relative to the stock market.
                     </p>
+                    <p>
+                        Website that portrays financial stock data in a readable and fun format as well as finance theory on relative to the stock market.
+                    </p>
                     <br />
                     <br />
                     <br />
