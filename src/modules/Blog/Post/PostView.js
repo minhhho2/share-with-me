@@ -6,6 +6,8 @@ import PostStore from './PostStore';
 export default class PostView extends React.Component {
 
     componentDidMount() {
+        // const { id } = this.props.match.params;
+        
         const { match: { params } } = this.props;
 
         PostStore.setup(params.id);
