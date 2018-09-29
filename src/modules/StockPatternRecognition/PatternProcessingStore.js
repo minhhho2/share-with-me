@@ -1,11 +1,16 @@
 
 
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
+import MockPatterns from './MockPatterns';
 
 class PatternProcessingStore {
 
     @observable tester = 'swaggerrs';
 
+    @action
+    setup = () => {
+        console.log('Setting up PatternProcessingStore');
+    }
 
 }
 

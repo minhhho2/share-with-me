@@ -1,16 +1,33 @@
 import * as React from 'react';
 import { Header, Grid, Divider, Button, Form, Input } from 'semantic-ui-react'
 import PatternProcessingStore from './PatternProcessingStore';
+import TimeSeriesApi from '../../api/TimeSeriesApi';
+
 
 export default class PatternProcessingView extends React.Component {
 
     componentDidMount = () => {
+        PatternProcessingStore.setup();
+    }
 
+    onClearInputs = () => {
+
+    }
+    onSubmitInputs = () => {
+        // Get states
+        // Api Call
+        const period = 'TIME_SERIES_DAILY';
+        const symbol = 'ASX:XJO';
+        const interval = '60min';
+        const outputSize = 'compact'
+
+        TimeSeriesApi.get(period, symbol, interval, outputSize).then(res => console.log(res))
+            .catch(err => console.log(err));
     }
 
     render() {
 
-        const {tester} = PatternProcessingStore;
+        const { tester } = PatternProcessingStore;
 
 
         return (
@@ -32,11 +49,18 @@ export default class PatternProcessingView extends React.Component {
                                 <Form.Input label='Output Size' placeholder='output size' />
                             </Form>
                         </Grid.Column>
+
                         {/* Buttons */}
                         <Grid.Column width={3}>
                             <Form>
-                                <Form.Button negative fluid content='Clear Inputs' />
-                                <Form.Button positive fluid content='Submit Inputs' />
+                                <Form.Button
+                                    negative fluid content='Clear Inputs'
+                                    onClick={this.onClearInputs}
+                                />
+                                <Form.Button
+                                    positive fluid content='Submit Inputs'
+                                    onClick={this.onSubmitInputs}
+                                />
                             </Form>
 
                         </Grid.Column>
