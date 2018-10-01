@@ -4,15 +4,10 @@ const MockPattern = {
         'TIME_SERIES_DAILY',
         'TIME_SERIES_WEEKLY',
         'TIME_SERIES_MONTHLY'
-    ], 
-    symbol: {
-        exchangeOptions: [
-
-        ],
-        tickerOptions: [
-
-        ]
-    },
+    ],
+    symbolOptions: [
+        'ASX:XJO', 'ASX:WHA'
+    ],
     intervalOptions: [
         '1min', '5min', '15min', '30min', '60min'
     ],

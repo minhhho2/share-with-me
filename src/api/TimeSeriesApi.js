@@ -4,6 +4,7 @@ import axios from 'axios';
 import MockPatterns from '../modules/StockPatternRecognition/MockPatterns';
 import config from './config/config';
 
+const BASE_URL = 'https://www.alphavantage.co/';
 const APIKEY = config.alphaVantageApiKey;
 
 class TimeSeriesApi {
@@ -13,33 +14,32 @@ class TimeSeriesApi {
     get = (period, symbol, interval, outputSize) => {
 
         // Check arguments
-        if (!this.checkArguments(period, symbol, interval, outputSize)) {
-            return;
-        }
+        this.checkArguments(period, symbol, interval, outputSize);
 
         // Make Api Call - example - https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=ASX:XJO&interval=60min&outputsize=full&apikey=${APIKEY}
-        return axios.get(`https://www.alphavantage.co/query?function=${period}&symbol=${symbol}&interval=${interval}&outputsize=${outputSize}&apikey=${APIKEY}`);
+        return axios.get(`${BASE_URL}query?function=${period}&symbol=${symbol}&interval=${interval}&outputsize=${outputSize}&apikey=${APIKEY}`);
     }
 
     checkArguments = (period, symbol, interval, outputSize) => {
-        // TODO: check symbol
-
+        
         // check period
         if (!MockPatterns.periodOptions.includes(period)) {
             console.log(`Error @ TimeSeriesApi.js: Incorrect period provided`);
-            return false;
+        }
+        // check symbol
+        if (!MockPatterns.symbolOptions.includes(symbol)) {
+            console.log(`Error @ TimeSeriesApi.js: Incorrect symbol provided`);
 
-            // check interval
-        } else if (!MockPatterns.intervalOptions.includes(interval)) {
+        }
+        // check interval
+        if (!MockPatterns.intervalOptions.includes(interval)) {
             console.log(`Error @ TimeSeriesApi.js: Incorrect interval provided`);
-            return false;
 
-            // check outputSize
-        } else if (!MockPatterns.outputSizeOptions.includes(outputSize)) {
+        }
+        // check outputSize
+        if (!MockPatterns.outputSizeOptions.includes(outputSize)) {
             console.log(`Error @ TimeSeriesApi.js: Incorrect outputSize provided`);
-            return false;
-        } else {
-            return true;
+
         }
     }
 }
