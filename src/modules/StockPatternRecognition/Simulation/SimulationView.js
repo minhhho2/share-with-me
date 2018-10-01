@@ -8,6 +8,7 @@ import SimulationInputForm from './SimulationInputForm';
 
 import { FlexibleWidthXYPlot, XYPlot, XAxis, YAxis, LineSeries } from 'react-vis';
 import 'react-vis/dist/style.css';
+import TimeSeriesView from './TimeSeriesView';
 
 
 @observer
@@ -15,57 +16,12 @@ export default class SimulationView extends React.Component {
 
     componentDidMount = () => { SimulationStore.setup(); }
 
-    // FORM HANDLERS
-    onDefaultInputs = () => { SimulationStore.default(); }
-    onClearInputs = () => { SimulationStore.clear(); }
-
-    onSubmitInputs = () => {
-        const { input } = SimulationStore;
-        TimeSeriesApi.get(input.period, input.symbol, input.interval, input.outputSize)
-            .then(res => {
-                const keys = Object.keys(res.data);
-                const key = keys.filter(key => {
-                    const words = key.split(' ');
-                    return words.includes('Time') && words.includes('Series');
-                })[0];
-
-
-                const data = res.data[key];
-                const dateKeys = Object.keys(data);
-                dateKeys.forEach((dateKey, index) => {
-                    SimulationStore.timeSeriesData.push(
-                        {
-                            date: new Date(dateKey),
-                            price: data[dateKey]['4. close']
-                        }
-                    )
-                })
-
-                // ensures order
-                SimulationStore.timeSeriesData.sort((a, b) => {
-                    // Turn your strings into dates, and then subtract them to get a value that is either negative, positive, or zero.
-                    return b['date'] - a['price'];
-                });
-
-                SimulationStore.refreshTimeSeriesAttributes();
-                console.log(SimulationStore.timeSeriesData.toJS());
-                // order by date
-            })
-            .catch(err => {
-                console.log(err)
-            });
-    }
-
-    handleInputSelectionChange = (e, data) => {
-        SimulationStore.updateInputKeyValue(data.name, data.value);
-    }
-
     render() {
 
-        const { input, timeSeriesData } = SimulationStore;
+        const { timeSeriesData } = SimulationStore;
 
         var data = timeSeriesData.map((data, index) => {
-            return {x: data.date, y: data.price}
+            return { x: data.date, y: data.price }
         })
 
         return (
@@ -78,21 +34,7 @@ export default class SimulationView extends React.Component {
                 <SimulationInputForm />
 
                 {/* Time Series Data */}
-                <Segment>
-
-                    <Header as='h2' content='Time Series Data' />
-                    <Divider />
-                    <FlexibleWidthXYPlot height={400}>
-                        <LineSeries data={data} />
-                        <XAxis />
-                        <YAxis />
-                    </FlexibleWidthXYPlot>
-                    <p>{`Start Date: ${SimulationStore.startDate}`}</p>
-                    <p>{`End Date: ${SimulationStore.endDate}`}</p>
-                    <p>{`Start Price: ${SimulationStore.startPrice}`}</p>
-                    <p>{`End Price: ${SimulationStore.endPrice}`}</p>
-                    <p>{`Number data points: ${SimulationStore.numberDataPoints}`}</p>
-                </Segment>
+                <TimeSeriesView />
 
                 {/* Sample View */}
                 <Grid.Row columns={3}>

@@ -9,8 +9,6 @@ import { observer } from 'mobx-react';
 @observer
 export default class SimulationInputForm extends React.Component {
 
-    componentDidMount = () => { SimulationStore.setup(); }
-
     // FORM HANDLERS
     onDefaultInputs = () => { SimulationStore.default(); }
     onClearInputs = () => { SimulationStore.clear(); }
@@ -47,22 +45,16 @@ export default class SimulationInputForm extends React.Component {
                 console.log(SimulationStore.timeSeriesData.toJS());
                 // order by date
             })
-            .catch(err => {
-                console.log(err)
-            });
+            .catch(err => { console.log(err) });
     }
 
-    handleInputSelectionChange = (e, data) => {
-        SimulationStore.updateInputKeyValue(data.name, data.value);
-    }
+    handleInputSelectionChange = (e, data) => { SimulationStore.updateInputKeyValue(data.name, data.value); }
 
     render() {
 
-        const { input, timeSeriesData } = SimulationStore;
+        const { input } = SimulationStore;
 
-        var data = timeSeriesData.map((data, index) => {
-            return { x: data.date, y: data.price }
-        })
+
 
         return (
 
