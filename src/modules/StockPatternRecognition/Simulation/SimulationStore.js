@@ -13,6 +13,12 @@ class PatternProcessingStore {
         interval: '',
         outputSize: ''
     }
+    @observable timeSeriesData = [];
+    @observable startDate = '';
+    @observable endDate = '';
+    @observable startPrice = '';
+    @observable endPrice = '';
+    @observable numberDataPoints = 0;
 
     @observable samplePattern = {}
     @observable stockPatterns = [];
@@ -40,6 +46,17 @@ class PatternProcessingStore {
     @action
     updateInputKeyValue = (key, value) => {
         this.input[key] = value;
+    }
+
+    @action
+    refreshTimeSeriesAttributes = () => {
+        this.numberDataPoints = this.timeSeriesData.length;
+        
+        this.startDate = this.timeSeriesData[0]['date'].toString().split('GMT')[0];
+        this.endDate = this.timeSeriesData[this.numberDataPoints - 1]['date'].toString().split('GMT')[0];
+        
+        this.startPrice = this.timeSeriesData[0]['price'];
+        this.endPrice = this.timeSeriesData[this.numberDataPoints - 1]['price'];
     }
 
 
