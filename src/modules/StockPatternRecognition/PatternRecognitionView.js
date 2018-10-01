@@ -7,6 +7,7 @@ import PatternRecognitionStore from './PatternRecognitionStore';
 
 import TestView from './Patterns/TestView';
 import PatternsView from './Patterns/PatternsView';
+import SimulationView from './Simulation/SimulationView';
 
 
 @observer
@@ -21,8 +22,10 @@ export default class PatternRecognitionView extends React.Component {
             case 'patterns':
                 return <PatternsView />
             case 'simulation':
-                return <TestView />
+                return <SimulationView />
             default:
+                return <TestView />
+
                 break;
         }
     }
@@ -43,7 +46,6 @@ export default class PatternRecognitionView extends React.Component {
                             {views.map((view, index) => {
                                 return (
                                     <Step
-                                        fluid
                                         active={activeView === view.name}
                                         id={view.name} key={index}
                                         onClick={this.onClickStepView}>
@@ -58,7 +60,7 @@ export default class PatternRecognitionView extends React.Component {
                     </Grid.Column>
 
                     <Grid.Column width={13}>
-                        <Segment fluid>
+                        <Segment fluid='true'>
                             {renderedView}
                         </Segment>
                     </Grid.Column>

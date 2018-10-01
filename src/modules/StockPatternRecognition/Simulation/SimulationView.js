@@ -1,37 +1,40 @@
 import * as React from 'react';
-import { Header, Grid, Divider, Button, Form, Segment, Image } from 'semantic-ui-react'
-import PatternProcessingStore from './PatternProcessingStore';
+import { Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react'
+import SimulationStore from './SimulationStore';
 import TimeSeriesApi from '../../../api/TimeSeriesApi';
+import MockPatterns from '../../../api/MockPatterns';
+import Options from './Options';
+import { observer } from 'mobx-react';
 
-
-export default class PatternProcessingView extends React.Component {
+@observer
+export default class SimulationView extends React.Component {
 
     componentDidMount = () => {
-        PatternProcessingStore.setup();
+        SimulationStore.setup();
     }
 
     // FORM HANDLERS
-    onDefaultInputs = () => { } // TODO: Set form to default inputs 
-    onClearInputs = () => { } // TODO: Clear form to nothing 
+    onDefaultInputs = () => { SimulationStore.default(); }
+    onClearInputs = () => { SimulationStore.clear(); }
+
     onSubmitInputs = () => {
+        const { input } = SimulationStore;
+        TimeSeriesApi.get(input.period, input.symbol, input.interval, input.outputSize)
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                console.log(err)
+            });
+    }
 
-        // Get states
-        const period = 'TIME_SERIES_DAILY';
-        const symbol = 'ASX:XJO';
-        const interval = '60min';
-        const outputSize = 'compact'
-
-        // API Call
-        TimeSeriesApi.get(period, symbol, interval, outputSize)
-            .then(res => console.log(res))
-            // TODO: Process and store data
-            .catch(err => console.log(err));
+    handleInputSelectionChange = (e, data) => {
+        SimulationStore.updateInputKeyValue(data.name, data.value);
     }
 
     render() {
 
-        const { } = PatternProcessingStore;
-
+        const { input } = SimulationStore;
 
         return (
             <div className='p-5'>
@@ -48,13 +51,36 @@ export default class PatternProcessingView extends React.Component {
                         <Grid.Column width={12}>
                             <Form>
                                 <Form.Group widths='equal'>
-                                    <Form.Input fluid label='Period' placeholder='period' />
-                                    <Form.Input fluid label='Symbol' placeholder='symbol' />
+                                    <Form.Dropdown
+                                        label='Period' name='period'
+                                        fluid selection value={input.period}
+                                        onChange={this.handleInputSelectionChange}
+                                        options={Options.period}
+                                    />
+                                    <Form.Dropdown
+                                        label='Symbol' name='symbol'
+                                        fluid selection value={input.symbol}
+                                        onChange={this.handleInputSelectionChange}
+                                        options={Options.symbol}
+                                    />
                                 </Form.Group>
                                 <Form.Group widths='equal'>
-                                    <Form.Input fluid label='Interval' placeholder='interval' />
-                                    <Form.Input fluid label='Output Size' placeholder='output size' />
+                                    <Form.Dropdown
+                                        label='Interval' name='interval'
+                                        fluid selection value={input.interval}
+                                        onChange={this.handleInputSelectionChange}
+                                        options={Options.interval}
+                                    />
+                                    <Form.Dropdown
+                                        label='Output Size' name='outputSize'
+                                        fluid selection value={input.outputSize}
+                                        onChange={this.handleInputSelectionChange}
+                                        options={Options.outputSize}
+                                    />
                                 </Form.Group>
+
+
+
                             </Form>
                         </Grid.Column>
 

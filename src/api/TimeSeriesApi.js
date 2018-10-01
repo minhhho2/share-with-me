@@ -1,7 +1,7 @@
 // https://www.alphavantage.co/documentation/#
 
 import axios from 'axios';
-import MockPatterns from '../modules/StockPatternRecognition/MockPatterns';
+import MockPatterns from './MockPatterns';
 import config from './config/config';
 
 const BASE_URL = 'https://www.alphavantage.co/';
@@ -29,7 +29,6 @@ class TimeSeriesApi {
         // check symbol
         if (!MockPatterns.symbolOptions.includes(symbol)) {
             console.log(`Error @ TimeSeriesApi.js: Incorrect symbol provided`);
-
         }
         // check interval
         if (!MockPatterns.intervalOptions.includes(interval)) {
@@ -39,7 +38,6 @@ class TimeSeriesApi {
         // check outputSize
         if (!MockPatterns.outputSizeOptions.includes(outputSize)) {
             console.log(`Error @ TimeSeriesApi.js: Incorrect outputSize provided`);
-
         }
     }
 }

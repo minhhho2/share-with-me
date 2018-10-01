@@ -3,30 +3,46 @@
 import { observable, action } from 'mobx';
 import DTW from 'dtw';
 import _ from 'lodash';
-import PolynomialRegression from 'ml-regression-polynomial';
-
-
-import MockPatterns from './MockPatterns';
-import StockPattern from '../../../api/StockPatternApi';
+import Options from './Options';
 
 class PatternProcessingStore {
 
-    @observable period = 'TEST_INTRADAY';
-    @observable symbol = 'TEST_ASX:XJO';
-    @observable interval = 'TEST_5MIN';
-    @observable outputSize = 'TEST_COMPACT';
-
+    @observable input = {
+        period: '',
+        symbol: '',
+        interval: '',
+        outputSize: ''
+    }
 
     @observable samplePattern = {}
     @observable stockPatterns = [];
 
-
     @action
     setup = () => {
-        console.log('Setting up PatternProcessingStore');    
+        this.default();
     }
 
-    
+    @action
+    clear = () => {
+        const keys = Object.keys(this.input);
+        keys.forEach(key => {
+            this.input[key] = '';
+        })
+    }
+    @action
+    default = () => {
+        this.input.period = Options.period[0].value;
+        this.input.symbol = Options.symbol[0].value;
+        this.input.outputSize = Options.outputSize[0].value;
+        this.input.interval = Options.interval[0].value;
+    }
+
+    @action
+    updateInputKeyValue = (key, value) => {
+        this.input[key] = value;
+    }
+
+
     /* 
         Compare samplePattern to all stock Patterns
     

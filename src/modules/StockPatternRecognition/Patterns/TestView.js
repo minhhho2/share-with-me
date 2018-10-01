@@ -8,7 +8,7 @@ export default class TestView extends React.Component {
         return (
             <div>
                 <p>
-                Test View
+                Selected no exisitent sub view
 
                 </p>
             </div>
