@@ -7,7 +7,7 @@ import PolynomialRegression from 'ml-regression-polynomial';
 
 
 import MockPatterns from './MockPatterns';
-import StockPattern from '../../api/StockPatternApi';
+import StockPattern from '../../../api/StockPatternApi';
 
 class PatternProcessingStore {
 

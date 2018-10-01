@@ -5,14 +5,12 @@ import { observer } from 'mobx-react';
 import PatternRecognitionStore from './PatternRecognitionStore';
 
 
-import TestView from './Subviews/TestView';
-import PatternsView from './Subviews/PatternsView';
+import TestView from './Patterns/TestView';
+import PatternsView from './Patterns/PatternsView';
 
 
 @observer
 export default class PatternRecognitionView extends React.Component {
-
-
 
     onClickStepView = (e) => {
         PatternRecognitionStore.activeView = e.target.id;
@@ -39,12 +37,13 @@ export default class PatternRecognitionView extends React.Component {
 
             <div className='p-3'>
                 <Grid>
-                    <Grid.Column width={4}>
-                        <Step.Group vertical>
+                    <Grid.Column width={3}>
+                        <Step.Group fluid vertical>
 
                             {views.map((view, index) => {
                                 return (
                                     <Step
+                                        fluid
                                         active={activeView === view.name}
                                         id={view.name} key={index}
                                         onClick={this.onClickStepView}>
@@ -58,8 +57,8 @@ export default class PatternRecognitionView extends React.Component {
                         </Step.Group>
                     </Grid.Column>
 
-                    <Grid.Column width={12}>
-                        <Segment>
+                    <Grid.Column width={13}>
+                        <Segment fluid>
                             {renderedView}
                         </Segment>
                     </Grid.Column>

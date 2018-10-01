@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Header, Grid, Divider, Button, Form, Segment, Image } from 'semantic-ui-react'
 import PatternProcessingStore from './PatternProcessingStore';
-import TimeSeriesApi from '../../api/TimeSeriesApi';
+import TimeSeriesApi from '../../../api/TimeSeriesApi';
 
 
 export default class PatternProcessingView extends React.Component {

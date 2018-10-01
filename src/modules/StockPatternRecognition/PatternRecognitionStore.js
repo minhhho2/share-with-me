@@ -1,10 +1,10 @@
 
 
-import { observable, action } from 'mobx';
+import { observable } from 'mobx';
 
 class PatternRecognitionStore {
 
-    @observable activeView = 'simulation';
+    @observable activeView = 'patterns';
     
     @observable views = [
         {
