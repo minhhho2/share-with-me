@@ -8,13 +8,10 @@ const COLLECTION = 'StockPattern'
 class StockPatternApi {
 
     /*
-        GET /databases/{database}/collections/{collection}
-        Example listing all documents in a given collection:
-        https://api.mlab.com/api/1/databases/my-db/collections/my-coll?apiKey=myAPIKey
-    
+        Create stock pattern
     */
-    getAll = () => {
-        return axios.get(`${BASE_URL}/databases/${DB_NAME}/collections/${COLLECTION}?apiKey=${API_KEY}`);
+    create = (data) => {
+        return;
     }
 
     /* 
@@ -22,8 +19,36 @@ class StockPatternApi {
         Example get the document with the specified _id:
         https://api.mlab.com/api/1/databases/my-db/collections/my-coll/4e7315a65e4ce91f885b7dde?apiKey=myAPIKey 
     */
-    get = (id) => {
+    read = (id) => {
         return axios.get(`${BASE_URL}/databases/${DB_NAME}/collections/${COLLECTION}/${id}?apiKey=${API_KEY}`);
     }
+
+    /*
+        Update stock pattern
+    */
+
+    update = (data) => {
+        return;
+    }
+
+    /* 
+        Delete stock pattern 
+    */
+
+    delete = (id) => {
+        return;
+    }
+
+
+    /*
+        GET /databases/{database}/collections/{collection}
+        Example listing all documents in a given collection:
+        https://api.mlab.com/api/1/databases/my-db/collections/my-coll?apiKey=myAPIKey
+    
+    */
+    readAll = () => {
+        return axios.get(`${BASE_URL}/databases/${DB_NAME}/collections/${COLLECTION}?apiKey=${API_KEY}`);
+    }
+
 }
 export default new StockPatternApi();

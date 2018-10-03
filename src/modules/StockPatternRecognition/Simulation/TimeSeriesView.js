@@ -11,25 +11,71 @@ import 'react-vis/dist/style.css';
 @observer
 export default class TimeSeriesView extends React.Component {
 
+    onStartSampling = () => {
+        clearInterval(SimulationStore.intervalId);
+        SimulationStore.windowPos = 0;
+        SimulationStore.intervalId = setInterval(this.timer, 200);
+    }
+
+    timer = () => {
+        console.log('interval at' + SimulationStore.windowPos);
+        SimulationStore.windowPos = SimulationStore.windowPos + 1;
+
+        // stop sampling
+        if (SimulationStore.windowPos > SimulationStore.timeSeriesData.length) {
+            clearInterval(SimulationStore.intervalId);
+        }
+    }
+
+    getSample = () => {
+        if (SimulationStore.intervalId != null) {
+            // configure sample appearance
+            var sampleData = [];
+            for (var i = SimulationStore.windowPos; i < SimulationStore.windowPos + SimulationStore.period; i++) {
+                sampleData.push({ x: i, y: SimulationStore.timeSeriesGraphData[i]['y'] });
+            }
+            return sampleData;
+        } else {
+            return [{ x: 100, y: 100 }];
+        }
+
+    }
+
+
     render() {
 
-        const { timeSeriesData } = SimulationStore;
+        const { timeSeriesData, windowPos, period } = SimulationStore;
 
-        var data = timeSeriesData.map((data, index) => {
-            return { x: data.date, y: data.price }
-        })
+        // Configure sliding window properties
+        var windowData = [];
+        for (var i = windowPos; i < windowPos + period; i++) {
+            windowData.push({ x: i, y: 0 });
+        }
+
+        const xWindowDomain = [0, timeSeriesData.length];
 
         return (
 
             <Segment>
-
+                {/* Time Series Chart */}
                 <Header as='h2' content='Time Series Data' />
                 <Divider />
                 <FlexibleWidthXYPlot height={400}>
-                    <LineSeries data={data} />
+                    <LineSeries data={SimulationStore.timeSeriesGraphData.slice()} />
                     <XAxis />
                     <YAxis />
                 </FlexibleWidthXYPlot>
+
+                {/* Sampling Window Chart */}
+                {/* Sliding Window */}
+                <FlexibleWidthXYPlot height={100} xDomain={xWindowDomain}>
+                    <LineSeries data={windowData} />
+                    <XAxis />
+                    <YAxis />
+                </FlexibleWidthXYPlot>
+                <Button type='button' onClick={this.onStartSampling} content='Start Sampling' />
+
+                <Header as='h3' content='Attributes' />
                 <p>{`Start Date: ${SimulationStore.startDate}`}</p>
                 <p>{`End Date: ${SimulationStore.endDate}`}</p>
                 <p>{`Start Price: ${SimulationStore.startPrice}`}</p>

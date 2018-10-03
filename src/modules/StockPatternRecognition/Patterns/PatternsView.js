@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, Divider, Button, Form, Segment, Image } from 'semantic-ui-react';
+import { Grid, Card, Button, Header, Form, Segment, Image } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import PatternsStore from './PatternsStore';
 import { XYPlot, LineMarkSeries, HorizontalGridLines, VerticalGridLines, XAxis, YAxis } from 'react-vis';
@@ -23,6 +23,9 @@ export default class PatternsView extends React.Component {
 
     }
 
+    onDelete = (e) => {}
+
+
 
 
     render() {
@@ -35,32 +38,47 @@ export default class PatternsView extends React.Component {
             <div>
 
                 <Segment>
-                    {definedPatterns.map((pattern, index) => {
-                        return (
-                            <div key={index}>
-                                <p>
-                                    {pattern.name}
-                                </p>
-
-                                <XYPlot height={200} width={200}>
-                                    <VerticalGridLines />
-                                    <HorizontalGridLines />
-                                    <XAxis />
-                                    <YAxis />
-                                    <LineMarkSeries
-                                        data={this.process(pattern.values)}
-                                        lineStyle={{ stroke: 'red' }}
-                                        markStyle={{ stroke: 'blue' }}
-                                    />
-                                </XYPlot>
+                    <Header as='h1' content='Defined Stock Patterns' />
 
 
-                            </div>
-                        );
-                    })}
+                    <Card.Group itemsPerRow={4}>
+
+
+                        {definedPatterns.map((pattern, index) => {
+                            return (
+                                <Card className='text-center' key={index}>
+                                    <Card.Content>
+                                        <Card.Header>{pattern.name}</Card.Header>
+                                        <Button content='delete' fluid negative />
+                                    </Card.Content>
+                                    <Card.Content>
+                                        <Card.Meta>distance/cost | dist from epsilon </Card.Meta>
+                                    </Card.Content>
+
+                                    <Card.Content>
+                                        <XYPlot height={200} width={250}>
+                                            <VerticalGridLines />
+                                            <HorizontalGridLines />
+                                            <XAxis />
+                                            <YAxis />
+                                            <LineMarkSeries
+                                                data={this.process(pattern.values)}
+                                                lineStyle={{ stroke: 'red' }}
+                                                markStyle={{ stroke: 'blue' }}
+                                            />
+                                        </XYPlot>
+                                    </Card.Content>
+                                </Card>
+
+                            );
+                        })}
+                    </Card.Group>
+
+
+
                 </Segment>
                 <Segment>
-
+                    <Header as='h1' content='Sampled Match Stock Patterns' />
                 </Segment>
             </div>
         )

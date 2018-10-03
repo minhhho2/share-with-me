@@ -1,14 +1,10 @@
 import * as React from 'react';
 import { Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react'
-import SimulationStore from './SimulationStore';
-import TimeSeriesApi from '../../../api/TimeSeriesApi';
-import Options from './Options';
 import { observer } from 'mobx-react';
-import SimulationInputForm from './SimulationInputForm';
 
-import { FlexibleWidthXYPlot, XYPlot, XAxis, YAxis, LineSeries } from 'react-vis';
-import 'react-vis/dist/style.css';
+import SimulationInputForm from './SimulationInputForm';
 import TimeSeriesView from './TimeSeriesView';
+import SimulationStore from './SimulationStore';
 
 
 @observer
@@ -19,10 +15,6 @@ export default class SimulationView extends React.Component {
     render() {
 
         const { timeSeriesData } = SimulationStore;
-
-        var data = timeSeriesData.map((data, index) => {
-            return { x: data.date, y: data.price }
-        })
 
         return (
             <div className='p-5'>

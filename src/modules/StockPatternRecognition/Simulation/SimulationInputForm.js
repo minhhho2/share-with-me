@@ -43,7 +43,10 @@ export default class SimulationInputForm extends React.Component {
 
                 SimulationStore.refreshTimeSeriesAttributes();
                 console.log(SimulationStore.timeSeriesData.toJS());
-                // order by date
+
+                SimulationStore.timeSeriesGraphData = SimulationStore.timeSeriesData.map((data, index) => {
+                    return { x: index, y: data.price }
+                })
             })
             .catch(err => { console.log(err) });
     }
@@ -53,8 +56,6 @@ export default class SimulationInputForm extends React.Component {
     render() {
 
         const { input } = SimulationStore;
-
-
 
         return (
 

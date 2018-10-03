@@ -14,14 +14,17 @@ class PatternProcessingStore {
         outputSize: ''
     }
     @observable timeSeriesData = [];
+    @observable timeSeriesGraphData = [];
     @observable startDate = '';
     @observable endDate = '';
     @observable startPrice = '';
     @observable endPrice = '';
     @observable numberDataPoints = 0;
 
-    @observable samplePattern = {}
-    @observable stockPatterns = [];
+
+    @observable windowPos = null;
+    @observable intervalId = null;
+    @observable period = 14;
 
     @action
     setup = () => {
