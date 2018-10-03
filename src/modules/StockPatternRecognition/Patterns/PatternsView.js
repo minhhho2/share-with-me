@@ -3,6 +3,7 @@ import { Grid, Card, Button, Header, Form, Segment, Image } from 'semantic-ui-re
 import { observer } from 'mobx-react';
 import PatternsStore from './PatternsStore';
 import { XYPlot, LineMarkSeries, HorizontalGridLines, VerticalGridLines, XAxis, YAxis } from 'react-vis';
+import StockPatternApi from '../../../api/StockPatternApi';
 
 @observer
 export default class PatternsView extends React.Component {
@@ -25,16 +26,17 @@ export default class PatternsView extends React.Component {
     }
 
     onDelete = (e) => {
-        console.log(e.target.id + 'is clicked');
+        console.log(JSON.stringify(e.target.id));
         var newSampledPatterns = PatternsStore.sampledPatterns.filter(pattern => {
-            return pattern.id !== parseInt(e.target.id);
+            return pattern._id.$oid !== e.target.id;
         });
 
         PatternsStore.sampledPatterns = newSampledPatterns.slice();
     }
 
-
-
+    testReadId = (e) => {
+        StockPatternApi.read('5bafb50cfb6fc01d131cfbc8').then(res => console.log(res)).catch(err => console.log(err));
+    }
 
     render() {
 
@@ -92,16 +94,18 @@ export default class PatternsView extends React.Component {
 
                     <Card.Group itemsPerRow={4}>
 
-                        {sampledPatterns.map((pattern, index) => {
+                        {sampledPatterns.map((pattern) => {
                             return (
-                                <Card className='' key={index}>
+                                <Card className='' key={pattern._id.$oid}>
 
                                     <Card.Content>
                                         <Card.Header>{pattern.name}</Card.Header>
                                     </Card.Content>
 
                                     <Card.Content>
-                                        <Card.Meta>distance/cost: {pattern.dist}</Card.Meta>
+                                        <Card.Meta>distance for sample and pattern: {pattern.dist}</Card.Meta>
+                                        <Card.Meta>difference between distance and epsilon: {pattern.dist}</Card.Meta>
+                                        <Card.Meta>average distance for same sampled pattern: {pattern.dist}</Card.Meta>
                                     </Card.Content>
 
                                     <Card.Content>
@@ -119,7 +123,7 @@ export default class PatternsView extends React.Component {
                                     </Card.Content>
 
                                     <Card.Content>
-                                        <Button id={pattern.id} content='delete' fluid negative onClick={this.onDelete} />
+                                        <Button id={pattern._id.$oid} content='delete' fluid negative onClick={this.onDelete} />
                                     </Card.Content>
                                 </Card>
 
@@ -127,6 +131,7 @@ export default class PatternsView extends React.Component {
                         })}
                     </Card.Group>
 
+                    <Button onClick={this.testReadId} content='tester' />
 
 
                 </Segment>
