@@ -66,7 +66,7 @@ export default class PatternsView extends React.Component {
                                     </Card.Content>
 
                                     <Card.Content>
-                                        <Card.Meta>distance/cost</Card.Meta>
+                                        <Card.Meta>dist/cost</Card.Meta>
                                         <Card.Meta>dist from epsilon</Card.Meta>
                                     </Card.Content>
 
@@ -106,9 +106,9 @@ export default class PatternsView extends React.Component {
                                     </Card.Content>
 
                                     <Card.Content>
-                                        <Card.Meta>distance for sample and pattern: {pattern.dist}</Card.Meta>
-                                        <Card.Meta>difference between distance and epsilon: {pattern.dist}</Card.Meta>
-                                        <Card.Meta>average distance for same sampled pattern: {pattern.dist}</Card.Meta>
+                                        <Card.Meta>dis for sample and pattern: {pattern.cost}</Card.Meta>
+                                        <Card.Meta>difference between dis and epsilon: {pattern.cost}</Card.Meta>
+                                        <Card.Meta>average dis for same sampled pattern: {pattern.cost}</Card.Meta>
                                     </Card.Content>
 
                                     <Card.Content>

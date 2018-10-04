@@ -32,7 +32,7 @@ class PatternsStore {
         MockPatterns.sampled.forEach(sample => {
             const data = {
                 name: sample.name,
-                distance: sample.distance,
+                cost: sample.cost,
                 values: sample.values
             };
             StockPatternApi.create(data).then(res => console.log(res)).catch(err => console.log(err));

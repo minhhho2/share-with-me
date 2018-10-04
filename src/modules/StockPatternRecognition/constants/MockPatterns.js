@@ -2,40 +2,52 @@ const MOCK_PATTERNS = {
     defined: [
         {
             name: 'Head and Shoulder',
-            values: [0, 5, 0, 10, 0, 5, 0]
+            values: [0, 2.5, 5, 2.5, 0, 5, 10, 5, 0, 2.5, 5, 2.5, 0]
         },
         {
             name: 'Double Top',
-            values: [0, 10, 0, 10, 0]
+            values: [0, 3, 6, 9, 6, 3, 0, 3, 6, 9, 6, 3, 0]
         },
         {
             name: 'Triple Top',
-            values: [0, 10, 0, 10, 0, 10, 0]
+            values: [0, 5, 10, 5, 0, 5, 10, 5, 0, 5, 10, 5, 0]
+        },
+        {
+            name: 'Double Botton',
+            values: [10, 5, 0, 5, 10, 5, 0, 5, 10, 5, 0, 5, 10]
         }
     ],
     sampled: [
         {
-            id: 1,
+            _id: {
+                $oid: '1'
+            },
             name: 'Head and Shoulder',
-            distance: 10,
+            cost: 10,
             values: [0, 5, 0, 10, 0, 5, 0]
         },
         {
-            id: 2,
+            _id: {
+                $oid: '2'
+            },
             name: 'Cup',
-            distance: 20,
+            cost: 20,
             values: [10, 4, 2, 0, 2, 4, 10]
         },
         {
-            id: 3,
+            _id: {
+                $oid: '3'
+            },
             name: 'Head and Shoulder',
-            distance: 10,
+            cost: 10,
             values: [0, 5, 0, 10, 0, 5, 0]
         },
         {
-            id: 4,
+            _id: {
+                $oid: '4'
+            },
             name: 'Cup',
-            distance: 20,
+            cost: 20,
             values: [10, 4, 2, 0, 2, 4, 10]
         }
     ]

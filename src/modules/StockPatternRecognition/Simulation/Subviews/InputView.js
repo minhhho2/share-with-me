@@ -10,9 +10,10 @@ import * as utils from '../Stores/utils';
 // Stores
 import InputStore from '../Stores/InputStore';
 import TimeSeriesStore from '../Stores/TimeSeriesStore';
+import SamplingStore from '../Stores/SamplingStore';
 
 @observer
-export default class InputForm extends React.Component {
+export default class InputView extends React.Component {
 
     componentDidMount() {
         InputStore.setDefaultValues();
@@ -29,9 +30,11 @@ export default class InputForm extends React.Component {
 
         // Get stock data based on inputs
         const { input } = InputStore;
+        SamplingStore.period = parseInt(input.period);
 
-        TimeSeriesApi.get(input.period, input.symbol, input.interval, input.outputSize)
+        TimeSeriesApi.get(input.period, input.symbol, input.outputSize)
             .then(res => {
+                console.log(res.data);
 
                 // Get the key for time series price data array from response
                 const timeSeriesPriceKey = utils.getTimeSeriesPriceKeyFromResponse(Object.keys(res.data));
@@ -43,11 +46,17 @@ export default class InputForm extends React.Component {
                 // Store stock price data tuple
                 var data = [];
                 dateKeys.forEach(dateKey => {
+
+
+                    const price = parseFloat(parseFloat(rawTimeSeriesData[dateKey]['4. close']).toFixed(2));
+                    if (price === 0) { return; }
+
                     data.push({
                         date: new Date(dateKey),
-                        price: rawTimeSeriesData[dateKey]['4. close']
+                        price: price
                     })
                 });
+
 
                 // Store sorted oldest to latest price data
                 TimeSeriesStore.data = utils.sortTimeSeriesDataByPrice(data);
@@ -62,7 +71,7 @@ export default class InputForm extends React.Component {
 
         return (
 
-            <Segment>
+            <Segment className='bg-light'>
                 <Header as='h2' content='Inputs' />
                 <Grid>
 
@@ -70,9 +79,9 @@ export default class InputForm extends React.Component {
                     <Grid.Column>
                         <Form>
                             <Form.Group widths='equal'>
-                                <Form.Dropdown
-                                    label='Period' name='period' fluid selection
-                                    value={input.period} options={Options.period}
+                                <Form.Input
+                                    type='number' label='Period' name='period' fluid
+                                    value={input.period}
                                     onChange={this.handleInputSelectionChange}
                                 />
                                 <Form.Dropdown
@@ -81,15 +90,11 @@ export default class InputForm extends React.Component {
                                     onChange={this.handleInputSelectionChange}
                                 />
                                 <Form.Dropdown
-                                    label='Interval' name='interval' fluid selection
-                                    value={input.interval} options={Options.interval}
-                                    onChange={this.handleInputSelectionChange}
-                                />
-                                <Form.Dropdown
                                     label='Output Size' name='outputSize' fluid selection
                                     value={input.outputSize} options={Options.outputSize}
                                     onChange={this.handleInputSelectionChange}
                                 />
+
                                 <Form.Button
                                     color='orange' fluid content='Default Inputs'
                                     onClick={this.onDefaultInputs}

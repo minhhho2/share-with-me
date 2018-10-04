@@ -21,7 +21,8 @@ export default class SamplingView extends React.Component {
 
     onStartSampling = () => {
         SamplingStore.clear();
-        SamplingStore.intervalId = setInterval(this.timer, 200);
+        SamplingStore.windowPos = 0;
+        SamplingStore.intervalId = setInterval(this.timer, 20);
     }
 
     timer = () => {
@@ -29,12 +30,13 @@ export default class SamplingView extends React.Component {
         const { data } = TimeSeriesStore;
 
         // get the N object of date and prices
+        
         const datas = data.slice(windowPos, windowPos + period);
-        const prices = datas.map(data => { return parseFloat(data.price); });
+        const prices = datas.map(data => { return data.price; });
 
         SamplingStore.setCurrentSampleValues(prices);   // set values for graph
         SamplingStore.classifySample(prices);           // compare and classift
-        SamplingStore.windowPos = windowPos + 1;      // increment samples
+        SamplingStore.windowPos = windowPos + 1;        // increment samples
 
         // stop sampling
         if (SamplingStore.windowPos > (data.length - period)) {
@@ -44,7 +46,7 @@ export default class SamplingView extends React.Component {
 
     render() {
 
-        const { currentSampleValues, windowPos, period } = SamplingStore;
+        const { currentSampleValues, windowPos, period, matches } = SamplingStore;
         const { data, attributes } = TimeSeriesStore;
 
         // Configure sliding window properties
@@ -53,20 +55,19 @@ export default class SamplingView extends React.Component {
             windowData.push({ x: i, y: 0 });
         }
 
-        const xWindowDomain = [0, data.length];
-
         return (
-            <Segment>
+            <Segment className='bg-light'>
                 <Header as='h2' content='Sampling View' />
                 <Divider />
 
                 {/* Sampling Window Chart */}
                 <Segment>
                     <Header as='h3' content='Sliding Window' />
-                    <FlexibleWidthXYPlot height={100} xDomain={xWindowDomain}>
-                        <LineMarkSeries data={windowData} />
+
+                    <FlexibleWidthXYPlot height={100} xDomain={[0, data.length]}>
                         <XAxis />
                         <YAxis />
+                        <LineMarkSeries data={windowData} />
                     </FlexibleWidthXYPlot>
                 </Segment>
 
@@ -76,8 +77,8 @@ export default class SamplingView extends React.Component {
                         <Form.Input value={`Dates: ${attributes.startDate} to ${attributes.endDate}`} />
                         <Form.Input value={`PriceS: ${attributes.startPrice} to ${attributes.endPrice}`} />
                         <Form.Input value={`Points: ${attributes.numberDataPoints}`} />
-                        <Form.Button fluid type='button' onClick={this.onStartSampling} content='Start Sampling' />
-                        <Form.Button fluid type='button' onClick={SamplingStore.clear} content='Stop Sampling' />
+                        <Form.Button fluid positive type='button' onClick={this.onStartSampling} content='Start Sampling' />
+                        <Form.Button fluid negative type='button' onClick={SamplingStore.clear} content='Stop Sampling' />
                     </Form.Group>
                 </Form>
 
@@ -116,8 +117,6 @@ export default class SamplingView extends React.Component {
                                             <Card.Content><Card.Header>{pattern.name}</Card.Header></Card.Content>
                                             <Card.Content>
                                                 <FlexibleWidthXYPlot height={150} >
-                                                    <XAxis />
-                                                    <YAxis />
                                                     <LineMarkSeries
                                                         data={utils.createGraphDataFromArrayOfValues(pattern.values)}
                                                         lineStyle={{ stroke: 'red' }}
@@ -135,11 +134,34 @@ export default class SamplingView extends React.Component {
                 </Segment>
 
                 <Segment>
-                    <Header as='h3' content='Matched Samples' />
+                    <Header as='h1' content='Sampled Match Stock Patterns' />
 
+                    <Card.Group itemsPerRow={4}>
+                        {matches.map((pattern, index) => {
+                            return (
+                                <Card className='' key={index}>
+                                    <Card.Content>
+                                        <Card.Header>{pattern.name}</Card.Header>
+                                        <Card.Description> {`cost: ${pattern.cost}`}</Card.Description>
+                                    </Card.Content>
+
+                                    <Card.Content>
+                                        <FlexibleWidthXYPlot height={200}>
+                                            <XAxis />
+                                            <YAxis />
+                                            <LineMarkSeries
+                                                data={utils.createGraphDataFromArrayOfValues(pattern.values)}
+                                                lineStyle={{ stroke: 'red' }}
+                                                markStyle={{ stroke: 'blue' }}
+                                            />
+                                        </FlexibleWidthXYPlot>
+                                    </Card.Content>
+                                </Card>
+                            );
+                        })}
+                    </Card.Group>
 
                 </Segment>
-
             </Segment>
         )
     }

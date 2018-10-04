@@ -18,9 +18,14 @@ const OPTIONS = {
             value: 'ASX:XJO',
         },
         {
-            key: 'ASX:WHA',
-            text: 'ASX:WHA',
-            value: 'ASX:WHA',
+            key: 'ASX:ANZ',
+            text: 'ASX:ANZ',
+            value: 'ASX:ANZ',
+        },  
+        {
+            key: 'ASX:CBA',
+            text: 'ASX:CBA',
+            value: 'ASX:CBA',
         },  
     ],
     outputSize: [
@@ -33,18 +38,6 @@ const OPTIONS = {
             key: 'full',
             text: 'full',
             value: 'full',
-        }
-    ],
-    interval: [
-        {
-            key: '5min',
-            text: '5min',
-            value: '5min'
-        },
-        {
-            key: '10min',
-            text: '10min',
-            value: '10min'
         }
     ]
 }

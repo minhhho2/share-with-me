@@ -12,21 +12,20 @@ class InputStore {
     @observable input = {
         period: '',
         symbol: '',
-        interval: '',
         outputSize: ''
     }
     
     @action
     setDefaultValues = () => {
-        this.input.period = Options.period[0].value;
+        this.input.period = 14;
         this.input.symbol = Options.symbol[0].value;
         this.input.outputSize = Options.outputSize[0].value;
-        this.input.interval = Options.interval[0].value;
     }
 
     @action
     clearDefaultValues = () => {
         this.input = _.mapValues(this.input, () => '');
+        this.input.period = 14;
     }
 
     @action

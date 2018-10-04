@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Header, Divider } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
 
-import InputForm from './Input/InputForm';
-import TimeSeriesView from './Sampling/TimeSeriesView';
-import SamplingView from './Sampling/SamplingView';
+import InputView from './Subviews/InputView';
+import TimeSeriesView from './Subviews/TimeSeriesView';
+import SamplingView from './Subviews/SamplingView';
 
 
 @observer
@@ -19,7 +19,7 @@ export default class SimulationView extends React.Component {
                 <Divider className='m-5' />
 
                 {/* Input Selection */}
-                <InputForm />
+                <InputView />
 
                 {/* Time Series Data */}
                 <TimeSeriesView />

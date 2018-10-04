@@ -1,7 +1,7 @@
 // https://www.alphavantage.co/documentation/#
 
 import axios from 'axios';
-import MockPatterns from './MockPatterns';
+import AlphaOptions from './AlphaOptions';
 import config from './config/config';
 
 const BASE_URL = 'https://www.alphavantage.co/';
@@ -9,35 +9,31 @@ const APIKEY = config.alphaVantageApiKey;
 
 class TimeSeriesApi {
 
+    get = (period, symbol, outputSize) => {
 
-
-    get = (period, symbol, interval, outputSize) => {
+        period = 'TIME_SERIES_DAILY'; // TODO: THIS IS HOT FIX - REMOVE PERIOD
 
         // Check arguments
-        this.checkArguments(period, symbol, interval, outputSize);
+        this.checkArguments(period, symbol, outputSize);
 
         // Make Api Call - example - https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=ASX:XJO&interval=60min&outputsize=full&apikey=${APIKEY}
-        return axios.get(`${BASE_URL}query?function=${period}&symbol=${symbol}&interval=${interval}&outputsize=${outputSize}&apikey=${APIKEY}`);
+        return axios.get(`${BASE_URL}query?function=${period}&symbol=${symbol}&outputsize=${outputSize}&apikey=${APIKEY}`);
     }
 
-    checkArguments = (period, symbol, interval, outputSize) => {
+    checkArguments = (period, symbol, outputSize) => {
         
         // check period
-        if (!MockPatterns.periodOptions.includes(period)) {
-            console.log(`Error @ TimeSeriesApi.js: Incorrect period provided`);
+        if (!AlphaOptions.periodOptions.includes(period)) {
+            console.log(`Error @ TimeSeriesApi.js: Incorrect period, ${period}, provided`);
         }
         // check symbol
-        if (!MockPatterns.symbolOptions.includes(symbol)) {
-            console.log(`Error @ TimeSeriesApi.js: Incorrect symbol provided`);
+        if (!AlphaOptions.symbolOptions.includes(symbol)) {
+            console.log(`Error @ TimeSeriesApi.js: Incorrect symbol, ${symbol},  provided`);
         }
-        // check interval
-        if (!MockPatterns.intervalOptions.includes(interval)) {
-            console.log(`Error @ TimeSeriesApi.js: Incorrect interval provided`);
 
-        }
         // check outputSize
-        if (!MockPatterns.outputSizeOptions.includes(outputSize)) {
-            console.log(`Error @ TimeSeriesApi.js: Incorrect outputSize provided`);
+        if (!AlphaOptions.outputSizeOptions.includes(outputSize)) {
+            console.log(`Error @ TimeSeriesApi.js: Incorrect outputSize, ${outputSize}, provided`);
         }
     }
 }

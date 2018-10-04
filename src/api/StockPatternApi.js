@@ -21,7 +21,7 @@ class StockPatternApi {
 
         const newPattern = {
             name: data.name,
-            distance: data.distance,
+            cost: data.cost,
             values: data.values
         }
 

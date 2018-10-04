@@ -59,14 +59,14 @@ export function createGraphDataFromArrayOfValues(values) {
     Normalize measurement array. Scales values in measurement array to the min max range of targetArr
 */
 export function normalize(measurementArr, targetArr){
-
     const rMin = _.min(measurementArr);
     const rMax = _.max(measurementArr);
     const tMin = _.min(targetArr);
     const tMax = _.max(targetArr);
 
     const normalized = measurementArr.map(el => {
-        return (parseInt((el - rMin)/(rMax - rMin) * (tMax - tMin) + tMin));
+        var normalizedValue = (el - rMin)/(rMax - rMin) * (tMax - tMin) + tMin;
+        return parseFloat(normalizedValue.toFixed(2));
     });
 
     return normalized;
