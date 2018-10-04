@@ -1,9 +1,14 @@
 import * as React from 'react';
-import { Grid, Card, Button, Header, Form, Segment, Image } from 'semantic-ui-react';
+import { Card, Button, Header, Segment } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
+import {
+    XYPlot, LineMarkSeries, HorizontalGridLines, VerticalGridLines, XAxis, YAxis
+} from 'react-vis';
+
+
 import PatternsStore from './PatternsStore';
-import { XYPlot, LineMarkSeries, HorizontalGridLines, VerticalGridLines, XAxis, YAxis } from 'react-vis';
 import StockPatternApi from '../../../api/StockPatternApi';
+import * as utils from '../Simulation/Stores/utils';
 
 @observer
 export default class PatternsView extends React.Component {
@@ -11,18 +16,6 @@ export default class PatternsView extends React.Component {
 
     componentDidMount() {
         PatternsStore.setup();
-    }
-
-    process = (values) => {
-        var data = values.map((value, index) => {
-            return {
-                x: index,
-                y: value
-            }
-        });
-
-        return data;
-
     }
 
     onDelete = (e) => {
@@ -35,10 +28,6 @@ export default class PatternsView extends React.Component {
             .catch(err => console.log(err));
 
         PatternsStore.sampledPatterns = newSampledPatterns.slice();
-    }
-
-    testReadId = (e) => {
-        StockPatternApi.read('5bafb50cfb6fc01d131cfbc8').then(res => console.log(res)).catch(err => console.log(err));
     }
 
     render() {
@@ -54,12 +43,12 @@ export default class PatternsView extends React.Component {
                     <Header as='h1' content='Defined Stock Patterns' />
 
 
-                    <Card.Group itemsPerRow={4}>
+                    <Card.Group itemsPerRow={6}>
 
 
                         {definedPatterns.map((pattern, index) => {
                             return (
-                                <Card className='' key={index}>
+                                <Card key={index}>
 
                                     <Card.Content>
                                         <Card.Header>{pattern.name}</Card.Header>
@@ -77,7 +66,7 @@ export default class PatternsView extends React.Component {
                                             <XAxis />
                                             <YAxis />
                                             <LineMarkSeries
-                                                data={this.process(pattern.values)}
+                                                data={utils.createGraphDataFromArrayOfValues(pattern.values)}
                                                 lineStyle={{ stroke: 'red' }}
                                                 markStyle={{ stroke: 'blue' }}
                                             />
@@ -118,7 +107,7 @@ export default class PatternsView extends React.Component {
                                             <XAxis />
                                             <YAxis />
                                             <LineMarkSeries
-                                                data={this.process(pattern.values)}
+                                            data={utils.createGraphDataFromArrayOfValues(pattern.values)}
                                                 lineStyle={{ stroke: 'red' }}
                                                 markStyle={{ stroke: 'blue' }}
                                             />
@@ -133,10 +122,6 @@ export default class PatternsView extends React.Component {
                             );
                         })}
                     </Card.Group>
-
-                    <Button onClick={this.testReadId} content='tester' />
-
-
                 </Segment>
             </div>
         )

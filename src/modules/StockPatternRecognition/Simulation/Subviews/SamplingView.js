@@ -11,12 +11,29 @@ import * as utils from '../Stores/utils';
 import SamplingStore from '../Stores/SamplingStore';
 import TimeSeriesStore from '../Stores/TimeSeriesStore';
 
+import StockPatternApi from '../../../../api/StockPatternApi';
 
 @observer
 export default class SamplingView extends React.Component {
 
     componentDidMount() {
         SamplingStore.setup();
+    }
+
+    onSaveMatchedSamples = () => {
+        const { matches } = SamplingStore;
+        if (matches.length <= 0) {
+            console.log('No matches found');
+        } else {
+            matches.defined.forEach(pattern => {
+                StockPatternApi.create(pattern)
+                    .then(res => console.log(res))
+                    .catch(err => console.log(err));
+            });
+        }
+
+        console.log(`Saving matches samples: ${SamplingStore.matches}`);
+
     }
 
     onStartSampling = () => {
@@ -30,7 +47,7 @@ export default class SamplingView extends React.Component {
         const { data } = TimeSeriesStore;
 
         // get the N object of date and prices
-        
+
         const datas = data.slice(windowPos, windowPos + period);
         const prices = datas.map(data => { return data.price; });
 
@@ -79,6 +96,7 @@ export default class SamplingView extends React.Component {
                         <Form.Input value={`Points: ${attributes.numberDataPoints}`} />
                         <Form.Button fluid positive type='button' onClick={this.onStartSampling} content='Start Sampling' />
                         <Form.Button fluid negative type='button' onClick={SamplingStore.clear} content='Stop Sampling' />
+                        <Form.Button fluid type='button' onClick={this.onSaveMatchedSamples} content='Save Samples' />
                     </Form.Group>
                 </Form>
 

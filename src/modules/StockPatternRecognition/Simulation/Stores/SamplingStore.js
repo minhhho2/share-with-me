@@ -35,7 +35,7 @@ class SamplingStore {
 
     classifySample = (sampleValues) => {
         var dtw = new DTW({ distanceMetric: 'squaredEuclidean' });
-        const THRESSHOLD = 30;
+        const THRESSHOLD = 25;
         
         var samplePatternValues = sampleValues;
         
@@ -45,7 +45,7 @@ class SamplingStore {
             var cost = dtw.compute(normalizedSampleValues, pattern.values);
 
             if (cost <= THRESSHOLD) {
-                console.log("MATCH" + pattern.name + ' ' + cost + '\n' + normalizedSampleValues + '\n' + pattern.values);
+                console.log("Matched sample with " + pattern.name + ' @ ' + cost);
                 
                 this.matches.push({
                     name: pattern.name,
