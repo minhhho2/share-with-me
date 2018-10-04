@@ -26,8 +26,6 @@ class StockPatternApi {
         }
 
         return axios.post(`${BASE_URL}?apiKey=${API_KEY}`, newPattern);
-
-
     }
 
     /* 

@@ -25,21 +25,19 @@ export default class SamplingView extends React.Component {
         if (matches.length <= 0) {
             console.log('No matches found');
         } else {
-            matches.defined.forEach(pattern => {
+            matches.forEach(pattern => {
                 StockPatternApi.create(pattern)
                     .then(res => console.log(res))
                     .catch(err => console.log(err));
             });
         }
 
-        console.log(`Saving matches samples: ${SamplingStore.matches}`);
-
     }
 
     onStartSampling = () => {
         SamplingStore.clear();
         SamplingStore.windowPos = 0;
-        SamplingStore.intervalId = setInterval(this.timer, 20);
+        SamplingStore.intervalId = setInterval(this.timer, 5);
     }
 
     timer = () => {
@@ -91,9 +89,9 @@ export default class SamplingView extends React.Component {
                 {/* Stats and buttons */}
                 <Form>
                     <Form.Group widths='equal'>
-                        <Form.Input value={`Dates: ${attributes.startDate} to ${attributes.endDate}`} />
-                        <Form.Input value={`PriceS: ${attributes.startPrice} to ${attributes.endPrice}`} />
-                        <Form.Input value={`Points: ${attributes.numberDataPoints}`} />
+                        <Form.Input label='dates' value={`${attributes.startDate} to ${attributes.endDate}`} />
+                        <Form.Input label='prices' value={`${attributes.startPrice} to ${attributes.endPrice}`} />
+                        <Form.Input label='samples' value={`${attributes.numberDataPoints}`} />
                         <Form.Button fluid positive type='button' onClick={this.onStartSampling} content='Start Sampling' />
                         <Form.Button fluid negative type='button' onClick={SamplingStore.clear} content='Stop Sampling' />
                         <Form.Button fluid type='button' onClick={this.onSaveMatchedSamples} content='Save Samples' />
@@ -108,31 +106,36 @@ export default class SamplingView extends React.Component {
                         {/* Current Sample */}
                         <Grid.Column width={4}>
                             <Header as='h3' content='Current Sample' />
-                            <Card>
-                                <Card.Content><Card.Header>Current Sample</Card.Header></Card.Content>
-                                <Card.Content>
-                                    <FlexibleWidthXYPlot height={150}>
-                                        <XAxis />
-                                        <YAxis />
-                                        <LineMarkSeries
-                                            data={utils.createGraphDataFromArrayOfValues(currentSampleValues)}
-                                            lineStyle={{ stroke: 'red' }}
-                                            markStyle={{ stroke: 'blue' }}
-                                        />
-                                    </FlexibleWidthXYPlot>
-                                </Card.Content>
-                            </Card>
+                            <Card.Group itemsPerRow={1}>
+
+                                <Card>
+                                    <Card.Content>
+                                        <Card.Header>Current Sample</Card.Header>
+                                    </Card.Content>
+                                    <Card.Content>
+                                        <FlexibleWidthXYPlot height={150}>
+                                            <LineMarkSeries
+                                                data={utils.createGraphDataFromArrayOfValues(currentSampleValues)}
+                                                lineStyle={{ stroke: 'red' }}
+                                                markStyle={{ stroke: 'blue' }}
+                                            />
+                                        </FlexibleWidthXYPlot>
+                                    </Card.Content>
+                                </Card>
+                            </Card.Group>
                         </Grid.Column>
 
                         {/* Defined Patterns  */}
                         <Grid.Column width={12}>
-                            <Header as='h3' content='Patterns' />
+                            <Header as='h3' content='Defined Patterns' />
                             <Card.Group itemsPerRow={4}>
 
                                 {MockPatterns.defined.slice().map((pattern, index) => {
                                     return (
-                                        <Card className='' key={index}>
-                                            <Card.Content><Card.Header>{pattern.name}</Card.Header></Card.Content>
+                                        <Card key={index}>
+                                            <Card.Content>
+                                                <Card.Header>{pattern.name}</Card.Header>
+                                            </Card.Content>
                                             <Card.Content>
                                                 <FlexibleWidthXYPlot height={150} >
                                                     <LineMarkSeries

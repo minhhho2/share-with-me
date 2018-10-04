@@ -27,6 +27,16 @@ const OPTIONS = {
             text: 'ASX:CBA',
             value: 'ASX:CBA',
         },  
+        {
+            key: 'ASX:BHP',
+            text: 'ASX:BHP',
+            value: 'ASX:BHP',
+        },  
+        {
+            key: 'ASX:ORG',
+            text: 'ASX:ORG',
+            value: 'ASX:ORG',
+        },  
     ],
     outputSize: [
         {

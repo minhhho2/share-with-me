@@ -18,7 +18,7 @@ class InputStore {
     @action
     setDefaultValues = () => {
         this.input.period = 14;
-        this.input.symbol = Options.symbol[0].value;
+        this.input.symbol = Options.symbol[3].value;
         this.input.outputSize = Options.outputSize[0].value;
     }
 

@@ -47,7 +47,6 @@ export default class InputView extends React.Component {
                 var data = [];
                 dateKeys.forEach(dateKey => {
 
-
                     const price = parseFloat(parseFloat(rawTimeSeriesData[dateKey]['4. close']).toFixed(2));
                     if (price === 0) { return; }
 

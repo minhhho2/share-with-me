@@ -3,8 +3,10 @@
 import { observable, action } from 'mobx';
 import DTW from 'dtw';
 import _ from 'lodash';
+
 import * as utils from '../Stores/utils';
-import MockPatterns from '../../constants/MockPatterns';
+import StockPatternApi from '../../../../api/StockPatternApi';
+
 
 class SamplingStore {
 
@@ -20,7 +22,12 @@ class SamplingStore {
 
     @action
     setup = () => {
-        this.patterns = MockPatterns.defined.slice(); // REMOVE AND GET PATTERNS FROM DB
+
+        // Get Sampled Patterns
+        StockPatternApi.readAll()
+            .then(res => { this.patterns = res.data.slice(); })
+            .catch(err => { console.log(err) });
+
     }
 
     @action
@@ -35,18 +42,18 @@ class SamplingStore {
 
     classifySample = (sampleValues) => {
         var dtw = new DTW({ distanceMetric: 'squaredEuclidean' });
-        const THRESSHOLD = 25;
-        
+        const THRESSHOLD = 20;
+
         var samplePatternValues = sampleValues;
-        
+
         this.patterns.forEach(pattern => {
             // normalize -> scale
-            var normalizedSampleValues= utils.normalize(samplePatternValues, pattern.values);
+            var normalizedSampleValues = utils.normalize(samplePatternValues, pattern.values);
             var cost = dtw.compute(normalizedSampleValues, pattern.values);
 
             if (cost <= THRESSHOLD) {
                 console.log("Matched sample with " + pattern.name + ' @ ' + cost);
-                
+
                 this.matches.push({
                     name: pattern.name,
                     cost: cost,
@@ -54,9 +61,7 @@ class SamplingStore {
                 });
             }
         });
-
     }
-
 }
 
 export default new SamplingStore();

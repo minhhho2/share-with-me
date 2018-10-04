@@ -7,7 +7,7 @@ const ALPHA_OPTIONS = {
     ],
 
     symbolOptions: [
-        'ASX:XJO', 'ASX:CBA', 'ASX:ANZ'
+        'ASX:XJO', 'ASX:CBA', 'ASX:ANZ', 'ASX:BHP', 'ASX:ORG'
     ],
     
     outputSizeOptions: [
