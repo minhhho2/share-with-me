@@ -34,6 +34,21 @@ export function sortTimeSeriesDataByPrice(data) {
         return a.date < b.date ? -1 : a.date > b.date ? 1 : 0;
     });
     // newData.forEach((data, index) => { console.log(index + ": " + data.date); });
-    
-    return newData; 
+
+    return newData;
+}
+
+/* 
+    Create array of {x: ..., y: ...} for react-viz chart
+*/
+export function createGraphDataFromArrayOfValues(values) {
+
+    var data = values.map((value, index) => {
+        return {
+            x: index,
+            y: value
+        }
+    });
+
+    return data;
 }

@@ -1,9 +1,13 @@
 import * as React from 'react';
 import { Header, Grid, Divider, Form, Segment } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
-import { FlexibleWidthXYPlot, LineMarkSeries, XYPlot, XAxis, YAxis, LineSeries } from 'react-vis';
+import {
+    FlexibleWidthXYPlot, 
+    LineMarkSeries, XAxis, YAxis, VerticalGridLines, HorizontalGridLines
+} from 'react-vis';
 
 import SimulationStore from '../SimulationStore';
+
 
 @observer
 export default class TimeSeriesView extends React.Component {
@@ -19,10 +23,12 @@ export default class TimeSeriesView extends React.Component {
                 {/* Time Series Chart */}
                 <Header as='h2' content='Time Series Data' />
                 <Divider />
-                <FlexibleWidthXYPlot height={300}>
-                    <LineMarkSeries data={timeSeriesGraphData.slice()} />
+                <FlexibleWidthXYPlot height={300} >
+                    <VerticalGridLines />
+                    <HorizontalGridLines />
                     <XAxis />
                     <YAxis />
+                    <LineMarkSeries data={timeSeriesGraphData.slice()} />
                 </FlexibleWidthXYPlot>
             </Segment>
 

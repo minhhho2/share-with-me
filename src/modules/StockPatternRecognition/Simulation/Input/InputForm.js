@@ -6,9 +6,10 @@ import { observer } from 'mobx-react';
 import SimulationStore from '../SimulationStore';
 import TimeSeriesApi from '../../../../api/TimeSeriesApi';
 import Options from '../../constants/Options';
-import * as utils from './utils';
+import * as utils from '../Stores/utils';
 
-
+import _ from 'lodash';
+import SamplingStore from '../Stores/SamplingStore';
 
 @observer
 export default class InputForm extends React.Component {
@@ -67,7 +68,7 @@ export default class InputForm extends React.Component {
     onStartSampling = () => {
         this.onStopSampling();
         SimulationStore.windowPos = 0;
-        SimulationStore.intervalId = setInterval(this.timer, 200);
+        SimulationStore.intervalId = setInterval(this.timer, 1000);
     }
 
     onStopSampling = () => {
@@ -75,9 +76,19 @@ export default class InputForm extends React.Component {
     }
 
     timer = () => {
+
+        const { windowPos, timeSeriesData, period } = SimulationStore;
+
         console.log(`index ${windowPos}`);
 
-        const {windowPos, timeSeriesData, period } = SimulationStore;
+
+        // get the N object of date and prices
+        const datas = timeSeriesData.slice(windowPos, windowPos + period);
+        const prices = datas.map(data => { return parseFloat(data.price); });
+
+        SamplingStore.currentSampleValues = prices;
+
+
         SimulationStore.windowPos = windowPos + 1;
 
         // stop sampling

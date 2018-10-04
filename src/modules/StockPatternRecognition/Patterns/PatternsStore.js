@@ -39,7 +39,6 @@ class PatternsStore {
 
         });
     }
-
 }
 
 export default new PatternsStore();
