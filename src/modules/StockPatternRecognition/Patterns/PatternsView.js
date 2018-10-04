@@ -26,10 +26,13 @@ export default class PatternsView extends React.Component {
     }
 
     onDelete = (e) => {
-        console.log(JSON.stringify(e.target.id));
         var newSampledPatterns = PatternsStore.sampledPatterns.filter(pattern => {
             return pattern._id.$oid !== e.target.id;
         });
+
+        StockPatternApi.delete(e.target.id)
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
 
         PatternsStore.sampledPatterns = newSampledPatterns.slice();
     }

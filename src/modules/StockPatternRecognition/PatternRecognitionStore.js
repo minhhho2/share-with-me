@@ -4,7 +4,7 @@ import { observable } from 'mobx';
 
 class PatternRecognitionStore {
 
-    @observable activeView = 'simulation';
+    @observable activeView = 'patterns';
     
     @observable views = [
         {

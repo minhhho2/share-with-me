@@ -1,9 +1,8 @@
 
 
 import { observable, action } from 'mobx';
-import DefinedPatterns from './DefinedPatterns';
+import MockPatterns from './MockPatterns';
 import _ from 'lodash';
-import MockSamplePatterns from './MockSamplePatterns';
 
 import StockPatternApi from '../../../api/StockPatternApi';
 
@@ -15,16 +14,28 @@ class PatternsStore {
 
     @action
     setup = () => {
+
         // Get defined patterns from static file
-        this.definedPatterns = DefinedPatterns.slice();
+        this.definedPatterns = MockPatterns.defined.slice();
+        //this.sampledPatterns = MockPatterns.sampled.slice();  // TODO: breaks because mongo is _id.$oid but sample is id
 
         // Get Sampled Patterns
-        StockPatternApi.readAll().then(res => {
-            this.sampledPatterns = res.data.slice();
-            console.log(this.sampledPatterns);
-        }).catch(err => console.log(err));
+        StockPatternApi.readAll()
+            .then(res => {
+                this.sampledPatterns = res.data.slice();
+                console.log(this.sampledPatterns);
+            }).catch(err => console.log(err));
+
     }
 
+    populateSampledPatterns = () => {
+        const data = {
+            name: 'test name',
+            distance: 123,
+            values: [1, 2, 3, 4, 5, 5, 5]
+        };
+        StockPatternApi.create(data).then(res => console.log(res)).catch(err => console.log(err));
+    }
 }
 
 export default new PatternsStore();
