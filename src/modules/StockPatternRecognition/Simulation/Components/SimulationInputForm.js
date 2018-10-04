@@ -1,48 +1,60 @@
 import * as React from 'react';
-import { Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react'
-import SimulationStore from './SimulationStore';
-import TimeSeriesApi from '../../../api/TimeSeriesApi';
-import Options from './Options';
+import { Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
+
+
+import SimulationStore from '../SimulationStore';
+import TimeSeriesApi from '../../../../api/TimeSeriesApi';
+import Options from '../../constants/Options';
+import * as utils from './utils.js';
+
 
 
 @observer
 export default class SimulationInputForm extends React.Component {
+
+    componentDidMount() {
+        // TODO: Remove when testing over -> only gets stock data straight away
+        this.onDefaultInputs();
+        this.onSubmitInputs();
+    }
+
+    handleInputSelectionChange = (e, data) => {
+        SimulationStore.updateInputKeyValue(data.name, data.value);
+    }
 
     // FORM HANDLERS
     onDefaultInputs = () => { SimulationStore.default(); }
     onClearInputs = () => { SimulationStore.clear(); }
 
     onSubmitInputs = () => {
+
+        // Get stock data based on inputs
         const { input } = SimulationStore;
         TimeSeriesApi.get(input.period, input.symbol, input.interval, input.outputSize)
             .then(res => {
-                const keys = Object.keys(res.data);
-                const key = keys.filter(key => {
-                    const words = key.split(' ');
-                    return words.includes('Time') && words.includes('Series');
-                })[0];
 
+                // Get the key for time series price data array from response
+                const timeSeriesPriceKey = utils.getTimeSeriesPriceKeyFromResponse(Object.keys(res.data));
 
-                const data = res.data[key];
-                const dateKeys = Object.keys(data);
-                dateKeys.forEach((dateKey, index) => {
-                    SimulationStore.timeSeriesData.push(
-                        {
-                            date: new Date(dateKey),
-                            price: data[dateKey]['4. close']
-                        }
-                    )
-                })
+                // Get time series price data and date keysfrom response
+                const rawTimeSeriesData = res.data[timeSeriesPriceKey];
+                const dateKeys = Object.keys(rawTimeSeriesData);
 
-                // ensures order
-                SimulationStore.timeSeriesData.sort((a, b) => {
-                    // Turn your strings into dates, and then subtract them to get a value that is either negative, positive, or zero.
-                    return b['date'] - a['price'];
+                // Store stock price data tuple
+                var data = [];
+                dateKeys.forEach(dateKey => {
+                    data.push({
+                        date: new Date(dateKey),
+                        price: rawTimeSeriesData[dateKey]['4. close']
+                    })
                 });
 
-                SimulationStore.refreshTimeSeriesAttributes();
-                console.log(SimulationStore.timeSeriesData.toJS());
+                // Store sorted oldest to latest price data
+                SimulationStore.timeSeriesData = utils.sortTimeSeriesDataByPrice(data);
+                SimulationStore.timeSeriesData.forEach((data, index) => { console.log(index + ": " + data.date); });
+
+                SimulationStore.updateTimeSeriesAttributes();
 
                 SimulationStore.timeSeriesGraphData = SimulationStore.timeSeriesData.map((data, index) => {
                     return { x: index, y: data.price }
@@ -51,7 +63,6 @@ export default class SimulationInputForm extends React.Component {
             .catch(err => { console.log(err) });
     }
 
-    handleInputSelectionChange = (e, data) => { SimulationStore.updateInputKeyValue(data.name, data.value); }
 
     render() {
 

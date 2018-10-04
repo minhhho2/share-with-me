@@ -2,10 +2,9 @@ import * as React from 'react';
 import { Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
 
-import SimulationInputForm from './SimulationInputForm';
-import TimeSeriesView from './TimeSeriesView';
+import SimulationInputForm from './Components/SimulationInputForm';
+import SimulationTimeSeriesView from './Components/SimulationTimeSeriesView';
 import SimulationStore from './SimulationStore';
-
 
 
 @observer
@@ -27,7 +26,7 @@ export default class SimulationView extends React.Component {
                 <SimulationInputForm />
 
                 {/* Time Series Data */}
-                <TimeSeriesView />
+                <SimulationTimeSeriesView />
 
                 {/* Sample View */}
                 <Grid.Row columns={3}>

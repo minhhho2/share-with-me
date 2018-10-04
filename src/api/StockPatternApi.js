@@ -53,7 +53,6 @@ class StockPatternApi {
 
     delete = (id) => { return axios.delete(`${BASE_URL}/${id}?apiKey=${API_KEY}`); }
 
-
     /*
         GET /databases/{database}/collections/{collection}
         Example listing all documents in a given collection:

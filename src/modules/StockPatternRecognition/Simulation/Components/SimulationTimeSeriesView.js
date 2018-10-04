@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react'
-import SimulationStore from './SimulationStore';
-import Options from './Options';
 import { observer } from 'mobx-react';
-
 import { FlexibleWidthXYPlot, XYPlot, XAxis, YAxis, LineSeries } from 'react-vis';
 import 'react-vis/dist/style.css';
 
+import SimulationStore from '../SimulationStore';
 
 @observer
 export default class TimeSeriesView extends React.Component {
@@ -44,7 +42,7 @@ export default class TimeSeriesView extends React.Component {
 
     render() {
 
-        const { timeSeriesData, windowPos, period } = SimulationStore;
+        const { timeSeriesData, windowPos, period, timeSeriesAttributes } = SimulationStore;
 
         // Configure sliding window properties
         var windowData = [];
@@ -76,11 +74,11 @@ export default class TimeSeriesView extends React.Component {
                 <Button type='button' onClick={this.onStartSampling} content='Start Sampling' />
 
                 <Header as='h3' content='Attributes' />
-                <p>{`Start Date: ${SimulationStore.startDate}`}</p>
-                <p>{`End Date: ${SimulationStore.endDate}`}</p>
-                <p>{`Start Price: ${SimulationStore.startPrice}`}</p>
-                <p>{`End Price: ${SimulationStore.endPrice}`}</p>
-                <p>{`Number data points: ${SimulationStore.numberDataPoints}`}</p>
+                <p>{`Start Date: ${timeSeriesAttributes.startDate}`}</p>
+                <p>{`End Date: ${timeSeriesAttributes.endDate}`}</p>
+                <p>{`Start Price: ${timeSeriesAttributes.startPrice}`}</p>
+                <p>{`End Price: ${timeSeriesAttributes.endPrice}`}</p>
+                <p>{`Number data points: ${timeSeriesAttributes.numberDataPoints}`}</p>
             </Segment>
 
 

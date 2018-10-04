@@ -5,10 +5,8 @@ import { observer } from 'mobx-react';
 import PatternRecognitionStore from './PatternRecognitionStore';
 
 
-import TestView from './Patterns/TestView';
 import PatternsView from './Patterns/PatternsView';
 import SimulationView from './Simulation/SimulationView';
-
 
 @observer
 export default class PatternRecognitionView extends React.Component {
@@ -24,8 +22,7 @@ export default class PatternRecognitionView extends React.Component {
             case 'simulation':
                 return <SimulationView />
             default:
-                return <TestView />
-
+                alert("incorrect view selected in pattern recognition");
                 break;
         }
     }
@@ -38,34 +35,29 @@ export default class PatternRecognitionView extends React.Component {
 
         return (
 
-            <div className='p-3'>
-                <Grid>
-                    <Grid.Column width={3}>
-                        <Step.Group fluid vertical>
+            <div className='p-5'>
+                {/* Sub view selection*/}
+                <Step.Group fluid>
+                    {views.map((view, index) => {
+                        return (
+                            <Step
+                                active={activeView === view.name}
+                                id={view.name} key={index}
+                                onClick={this.onClickStepView}>
+                                <Step.Content>
+                                    <Step.Title>{view.name}</Step.Title>
+                                </Step.Content>
+                            </Step>
+                        );
+                    })}
 
-                            {views.map((view, index) => {
-                                return (
-                                    <Step
-                                        active={activeView === view.name}
-                                        id={view.name} key={index}
-                                        onClick={this.onClickStepView}>
-                                        <Step.Content>
-                                            <Step.Title>{view.name}</Step.Title>
-                                        </Step.Content>
-                                    </Step>
-                                );
-                            })}
+                </Step.Group>
 
-                        </Step.Group>
-                    </Grid.Column>
+                {/* Content of Sub View */}
+                <Segment fluid='true'>
+                    {renderedView}
+                </Segment>
 
-                    <Grid.Column width={13}>
-                        <Segment fluid='true'>
-                            {renderedView}
-                        </Segment>
-                    </Grid.Column>
-
-                </Grid>
 
             </div>
 

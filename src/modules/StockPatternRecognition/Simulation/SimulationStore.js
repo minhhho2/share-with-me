@@ -3,9 +3,9 @@
 import { observable, action } from 'mobx';
 import DTW from 'dtw';
 import _ from 'lodash';
-import Options from './Options';
+import Options from '../constants/Options';
 
-class PatternProcessingStore {
+class SimulationStore {
 
     @observable input = {
         period: '',
@@ -13,14 +13,18 @@ class PatternProcessingStore {
         interval: '',
         outputSize: ''
     }
+
+
     @observable timeSeriesData = [];
     @observable timeSeriesGraphData = [];
-    @observable startDate = '';
-    @observable endDate = '';
-    @observable startPrice = '';
-    @observable endPrice = '';
-    @observable numberDataPoints = 0;
 
+    @observable timeSeriesAttributes = {
+        startDate: '',
+        endDate: '',
+        startPrice: '',
+        endPrice: '',
+        numberDataPoints: 0
+    }
 
     @observable windowPos = null;
     @observable intervalId = null;
@@ -52,15 +56,20 @@ class PatternProcessingStore {
     }
 
     @action
-    refreshTimeSeriesAttributes = () => {
-        this.numberDataPoints = this.timeSeriesData.length;
-        
-        this.startDate = this.timeSeriesData[0]['date'].toString().split('GMT')[0];
-        this.endDate = this.timeSeriesData[this.numberDataPoints - 1]['date'].toString().split('GMT')[0];
-        
-        this.startPrice = this.timeSeriesData[0]['price'];
-        this.endPrice = this.timeSeriesData[this.numberDataPoints - 1]['price'];
+    updateTimeSeriesAttributes = () => {
+        const numberDataPoints = this.timeSeriesData.length;
+        this.updatetimeSeriesAttributesKeyValue('numberDataPoints', numberDataPoints);
+        this.updatetimeSeriesAttributesKeyValue('startDate', this.timeSeriesData[0]['date'].toString().split('GMT')[0]);
+        this.updatetimeSeriesAttributesKeyValue('endDate', this.timeSeriesData[numberDataPoints - 1]['date'].toString().split('GMT')[0]);
+        this.updatetimeSeriesAttributesKeyValue('startPrice', this.timeSeriesData[0]['price']);
+        this.updatetimeSeriesAttributesKeyValue('endPrice', this.timeSeriesData[numberDataPoints - 1]['price']);
     }
+
+    @action
+    updatetimeSeriesAttributesKeyValue = (key, value) => {
+        this.timeSeriesAttributes[key] = value;
+    }
+
 
 
     /* 
@@ -95,4 +104,4 @@ class PatternProcessingStore {
 
 
 // get sectors
-export default new PatternProcessingStore();
+export default new SimulationStore();
