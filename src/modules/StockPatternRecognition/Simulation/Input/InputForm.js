@@ -6,12 +6,12 @@ import { observer } from 'mobx-react';
 import SimulationStore from '../SimulationStore';
 import TimeSeriesApi from '../../../../api/TimeSeriesApi';
 import Options from '../../constants/Options';
-import * as utils from './utils.js';
+import * as utils from './utils';
 
 
 
 @observer
-export default class SimulationInputForm extends React.Component {
+export default class InputForm extends React.Component {
 
     componentDidMount() {
         // TODO: Remove when testing over -> only gets stock data straight away
@@ -52,21 +52,59 @@ export default class SimulationInputForm extends React.Component {
 
                 // Store sorted oldest to latest price data
                 SimulationStore.timeSeriesData = utils.sortTimeSeriesDataByPrice(data);
-                SimulationStore.timeSeriesData.forEach((data, index) => { console.log(index + ": " + data.date); });
+                //SimulationStore.timeSeriesData.forEach((data, index) => { console.log(index + ": " + data.date); });
 
                 SimulationStore.updateTimeSeriesAttributes();
 
                 SimulationStore.timeSeriesGraphData = SimulationStore.timeSeriesData.map((data, index) => {
                     return { x: index, y: data.price }
-                })
+                });
             })
             .catch(err => { console.log(err) });
     }
 
 
+    onStartSampling = () => {
+        this.onStopSampling();
+        SimulationStore.windowPos = 0;
+        SimulationStore.intervalId = setInterval(this.timer, 200);
+    }
+
+    onStopSampling = () => {
+        clearInterval(SimulationStore.intervalId);
+    }
+
+    timer = () => {
+        console.log(`index ${windowPos}`);
+
+        const {windowPos, timeSeriesData, period } = SimulationStore;
+        SimulationStore.windowPos = windowPos + 1;
+
+        // stop sampling
+        if (SimulationStore.windowPos > (timeSeriesData.length - period)) {
+            this.onStopSampling();
+        }
+    }
+
+    /* What is this for?!?!?!*/
+    getSample = () => {
+        if (SimulationStore.intervalId != null) {
+            // configure sample appearance
+            var sampleData = [];
+            for (var i = SimulationStore.windowPos; i < SimulationStore.windowPos + SimulationStore.period; i++) {
+                sampleData.push({ x: i, y: SimulationStore.timeSeriesGraphData[i]['y'] });
+            }
+            return sampleData;
+        } else {
+            return [{ x: 100, y: 100 }];
+        }
+
+    }
+
+
     render() {
 
-        const { input } = SimulationStore;
+        const { input, timeSeriesAttributes } = SimulationStore;
 
         return (
 
@@ -75,7 +113,7 @@ export default class SimulationInputForm extends React.Component {
                 <Grid>
 
                     {/* Form Inputs */}
-                    <Grid.Column width={12}>
+                    <Grid.Column width={8}>
                         <Form>
                             <Form.Group widths='equal'>
                                 <Form.Dropdown
@@ -106,26 +144,38 @@ export default class SimulationInputForm extends React.Component {
                                 />
                             </Form.Group>
 
+                            <Form.Group widths='equal'>
+                                <Form.Button
+                                    color='orange' fluid content='Default Inputs'
+                                    onClick={this.onDefaultInputs}
+                                />
+                                <Form.Button
+                                    negative fluid content='Clear Inputs'
+                                    onClick={this.onClearInputs}
+                                />
+                                <Form.Button
+                                    positive fluid content='Submit Inputs'
+                                    onClick={this.onSubmitInputs}
+                                />
+                            </Form.Group>
+
 
 
                         </Form>
                     </Grid.Column>
 
-                    {/* Buttons */}
-                    <Grid.Column width={4}>
+
+                    {/* Stats */}
+                    <Grid.Column width={8}>
+                        <p><strong>Date: </strong>{`${timeSeriesAttributes.startDate} to ${timeSeriesAttributes.endDate}`}</p>
+                        <p><strong>Price: </strong>{`${timeSeriesAttributes.startPrice} to ${timeSeriesAttributes.endPrice}`}</p>
+                        <p><strong>Samples: </strong>{`${timeSeriesAttributes.numberDataPoints}`}</p>
+
                         <Form>
-                            <Form.Button
-                                color='orange' fluid content='Default Inputs'
-                                onClick={this.onDefaultInputs}
-                            />
-                            <Form.Button
-                                negative fluid content='Clear Inputs'
-                                onClick={this.onClearInputs}
-                            />
-                            <Form.Button
-                                positive fluid content='Submit Inputs'
-                                onClick={this.onSubmitInputs}
-                            />
+                            <Form.Group widths='equal'>
+                                <Form.Button fluid type='button' onClick={this.onStartSampling} content='Start Sampling' />
+                                <Form.Button fluid type='button' onClick={this.onStopSampling} content='Stop Sampling' />
+                            </Form.Group>
                         </Form>
 
                     </Grid.Column>

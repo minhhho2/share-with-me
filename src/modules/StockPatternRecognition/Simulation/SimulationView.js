@@ -2,8 +2,10 @@ import * as React from 'react';
 import { Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
 
-import SimulationInputForm from './Components/SimulationInputForm';
-import SimulationTimeSeriesView from './Components/SimulationTimeSeriesView';
+import InputForm from './Input/InputForm';
+import TimeSeriesView from './Sampling/TimeSeriesView';
+import SamplingView from './Sampling/SamplingView';
+
 import SimulationStore from './SimulationStore';
 
 
@@ -23,32 +25,14 @@ export default class SimulationView extends React.Component {
                 <Divider className='m-5' />
 
                 {/* Input Selection */}
-                <SimulationInputForm />
+                <InputForm />
+
+                {/* Sampling Data */}
+                <SamplingView />
 
                 {/* Time Series Data */}
-                <SimulationTimeSeriesView />
+                <TimeSeriesView />
 
-                {/* Sample View */}
-                <Grid.Row columns={3}>
-                    <Grid.Column>
-                        <Header as='h1' content='Sample' />
-                        <Divider />
-                        <Button content='click me'></Button>
-                    </Grid.Column>
-
-                    <Grid.Column>
-                        <Header as='h1' content='Comparing Class' />
-                        <Divider />
-                        <Button content='click me'></Button>
-                    </Grid.Column>
-
-                    <Grid.Column>
-                        <Header as='h1' content='Identified Classes' />
-                        <Divider />
-                        <Button content='click me'></Button>
-                    </Grid.Column>
-
-                </Grid.Row>
 
 
             </div>

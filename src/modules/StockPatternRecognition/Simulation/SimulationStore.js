@@ -23,9 +23,10 @@ class SimulationStore {
         endDate: '',
         startPrice: '',
         endPrice: '',
-        numberDataPoints: 0
+        numberDataPoints: ''
     }
 
+    // Properties for sampling
     @observable windowPos = null;
     @observable intervalId = null;
     @observable period = 14;
@@ -37,11 +38,14 @@ class SimulationStore {
 
     @action
     clear = () => {
-        const keys = Object.keys(this.input);
-        keys.forEach(key => {
-            this.input[key] = '';
-        })
+        this.input = _.mapValues(this.input, () => '');
+        this.timeSeriesAttributes = _.mapValues(this.timeSeriesAttributes, () => '');
+        this.timeSeriesData = [];
+        this.timeSeriesGraphData = [];
+        clearInterval(this.intervalId);
+
     }
+
     @action
     default = () => {
         this.input.period = Options.period[0].value;
@@ -56,20 +60,19 @@ class SimulationStore {
     }
 
     @action
-    updateTimeSeriesAttributes = () => {
-        const numberDataPoints = this.timeSeriesData.length;
-        this.updatetimeSeriesAttributesKeyValue('numberDataPoints', numberDataPoints);
-        this.updatetimeSeriesAttributesKeyValue('startDate', this.timeSeriesData[0]['date'].toString().split('GMT')[0]);
-        this.updatetimeSeriesAttributesKeyValue('endDate', this.timeSeriesData[numberDataPoints - 1]['date'].toString().split('GMT')[0]);
-        this.updatetimeSeriesAttributesKeyValue('startPrice', this.timeSeriesData[0]['price']);
-        this.updatetimeSeriesAttributesKeyValue('endPrice', this.timeSeriesData[numberDataPoints - 1]['price']);
-    }
-
-    @action
     updatetimeSeriesAttributesKeyValue = (key, value) => {
         this.timeSeriesAttributes[key] = value;
     }
 
+    @action
+    updateTimeSeriesAttributes = () => {
+        const numberDataPoints = this.timeSeriesData.length;
+        this.updatetimeSeriesAttributesKeyValue('numberDataPoints', numberDataPoints);
+        this.updatetimeSeriesAttributesKeyValue('startDate', this.timeSeriesData[0]['date'].toString().split('10:00:00')[0]);
+        this.updatetimeSeriesAttributesKeyValue('endDate', this.timeSeriesData[numberDataPoints - 1]['date'].toString().split('10:00:00')[0]);
+        this.updatetimeSeriesAttributesKeyValue('startPrice', this.timeSeriesData[0]['price']);
+        this.updatetimeSeriesAttributesKeyValue('endPrice', this.timeSeriesData[numberDataPoints - 1]['price']);
+    }
 
 
     /* 
