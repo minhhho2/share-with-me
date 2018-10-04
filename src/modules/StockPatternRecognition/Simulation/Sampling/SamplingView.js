@@ -1,34 +1,51 @@
 import * as React from 'react';
-import { Card, Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react'
+import { Card, Header, Grid, Divider, Form, Segment } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
-import SimulationStore from '../SimulationStore';
-import SamplingStore from '../Stores/SamplingStore';
+import { FlexibleWidthXYPlot, LineMarkSeries, XAxis, YAxis } from 'react-vis';
+
 
 import MockPatterns from '../../constants/MockPatterns';
-import {
-    FlexibleWidthXYPlot, XYPlot, LineMarkSeries,
-    HorizontalGridLines, VerticalGridLines, XAxis, YAxis
-} from 'react-vis';
-
 import * as utils from '../Stores/utils';
+
+// Stores
+import SamplingStore from '../Stores/SamplingStore';
+import TimeSeriesStore from '../Stores/TimeSeriesStore';
+
 
 @observer
 export default class SamplingView extends React.Component {
 
-    /* 
-    TODO LIST
-        // Read sampled patterns from db
-    // Compare sample to patterns
-    // on matches: create pattern
-        // add to local array
-        // add to DB
-    */
+    componentDidMount() {
+        SamplingStore.setup();
+    }
+
+    onStartSampling = () => {
+        SamplingStore.clear();
+        SamplingStore.intervalId = setInterval(this.timer, 200);
+    }
+
+    timer = () => {
+        const { windowPos, period } = SamplingStore
+        const { data } = TimeSeriesStore;
+
+        // get the N object of date and prices
+        const datas = data.slice(windowPos, windowPos + period);
+        const prices = datas.map(data => { return parseFloat(data.price); });
+
+        SamplingStore.setCurrentSampleValues(prices);   // set values for graph
+        SamplingStore.classifySample(prices);           // compare and classift
+        SamplingStore.windowPos = windowPos + 1;      // increment samples
+
+        // stop sampling
+        if (SamplingStore.windowPos > (data.length - period)) {
+            SamplingStore.clear();
+        }
+    }
 
     render() {
 
-
-        const { timeSeriesData, windowPos, period } = SimulationStore;
-        const { currentSampleValues } = SamplingStore;
+        const { currentSampleValues, windowPos, period } = SamplingStore;
+        const { data, attributes } = TimeSeriesStore;
 
         // Configure sliding window properties
         var windowData = [];
@@ -36,10 +53,7 @@ export default class SamplingView extends React.Component {
             windowData.push({ x: i, y: 0 });
         }
 
-        const xWindowDomain = [0, timeSeriesData.length];
-
-
-
+        const xWindowDomain = [0, data.length];
 
         return (
             <Segment>
@@ -55,6 +69,18 @@ export default class SamplingView extends React.Component {
                         <YAxis />
                     </FlexibleWidthXYPlot>
                 </Segment>
+
+                {/* Stats and buttons */}
+                <Form>
+                    <Form.Group widths='equal'>
+                        <Form.Input value={`Dates: ${attributes.startDate} to ${attributes.endDate}`} />
+                        <Form.Input value={`PriceS: ${attributes.startPrice} to ${attributes.endPrice}`} />
+                        <Form.Input value={`Points: ${attributes.numberDataPoints}`} />
+                        <Form.Button fluid type='button' onClick={this.onStartSampling} content='Start Sampling' />
+                        <Form.Button fluid type='button' onClick={SamplingStore.clear} content='Stop Sampling' />
+                    </Form.Group>
+                </Form>
+
 
                 {/* Current Sample nand Comparison Patterns */}
                 <Segment>

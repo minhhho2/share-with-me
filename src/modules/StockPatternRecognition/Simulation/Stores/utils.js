@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 /* 
     Finds the key for the stock price time series data from alpha vantage api call response.
     The key name is dependent on the period selected, thus, it can be different.
@@ -12,7 +14,7 @@ export function getTimeSeriesPriceKeyFromResponse(keys) {
     if (key.length != 1) {
         console.log("The keys given are " + keys);
         throw new Error(
-            `Could not find proper time series key from alpha vantage api response \n the keyts are ${keys}`
+            `Time Series Key was not among the keys from the response: ${keys}`
         );
     }
 
@@ -51,4 +53,21 @@ export function createGraphDataFromArrayOfValues(values) {
     });
 
     return data;
+}
+
+/* 
+    Normalize measurement array. Scales values in measurement array to the min max range of targetArr
+*/
+export function normalize(measurementArr, targetArr){
+
+    const rMin = _.min(measurementArr);
+    const rMax = _.max(measurementArr);
+    const tMin = _.min(targetArr);
+    const tMax = _.max(targetArr);
+
+    const normalized = measurementArr.map(el => {
+        return (parseInt((el - rMin)/(rMax - rMin) * (tMax - tMin) + tMin));
+    });
+
+    return normalized;
 }

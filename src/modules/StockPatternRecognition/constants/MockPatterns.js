@@ -5,8 +5,12 @@ const MOCK_PATTERNS = {
             values: [0, 5, 0, 10, 0, 5, 0]
         },
         {
-            name: 'Cup',
-            values: [10, 4, 2, 0, 2, 4, 10]
+            name: 'Double Top',
+            values: [0, 10, 0, 10, 0]
+        },
+        {
+            name: 'Triple Top',
+            values: [0, 10, 0, 10, 0, 10, 0]
         }
     ],
     sampled: [

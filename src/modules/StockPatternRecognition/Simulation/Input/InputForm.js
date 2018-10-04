@@ -1,37 +1,35 @@
 import * as React from 'react';
-import { Header, Grid, Divider, Dropdown, Button, Form, Segment, Image } from 'semantic-ui-react';
+import { Header, Grid, Form, Segment, Image } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
+import _ from 'lodash';
 
-
-import SimulationStore from '../SimulationStore';
 import TimeSeriesApi from '../../../../api/TimeSeriesApi';
 import Options from '../../constants/Options';
 import * as utils from '../Stores/utils';
 
-import _ from 'lodash';
-import SamplingStore from '../Stores/SamplingStore';
+// Stores
+import InputStore from '../Stores/InputStore';
+import TimeSeriesStore from '../Stores/TimeSeriesStore';
 
 @observer
 export default class InputForm extends React.Component {
 
     componentDidMount() {
-        // TODO: Remove when testing over -> only gets stock data straight away
-        this.onDefaultInputs();
-        this.onSubmitInputs();
+        InputStore.setDefaultValues();
+        this.onSubmitInputs(); // TODO: REMOVE ON PRODUCTION
     }
 
-    handleInputSelectionChange = (e, data) => {
-        SimulationStore.updateInputKeyValue(data.name, data.value);
-    }
+    handleInputSelectionChange = (e, data) => { InputStore.updateInputKeyValue(data.name, data.value); }
 
-    // FORM HANDLERS
-    onDefaultInputs = () => { SimulationStore.default(); }
-    onClearInputs = () => { SimulationStore.clear(); }
+    onDefaultInputs = () => { InputStore.setDefaultValues(); }
+
+    onClearInputs = () => { InputStore.clearDefaultValues(); }
 
     onSubmitInputs = () => {
 
         // Get stock data based on inputs
-        const { input } = SimulationStore;
+        const { input } = InputStore;
+
         TimeSeriesApi.get(input.period, input.symbol, input.interval, input.outputSize)
             .then(res => {
 
@@ -52,70 +50,15 @@ export default class InputForm extends React.Component {
                 });
 
                 // Store sorted oldest to latest price data
-                SimulationStore.timeSeriesData = utils.sortTimeSeriesDataByPrice(data);
-                //SimulationStore.timeSeriesData.forEach((data, index) => { console.log(index + ": " + data.date); });
-
-                SimulationStore.updateTimeSeriesAttributes();
-
-                SimulationStore.timeSeriesGraphData = SimulationStore.timeSeriesData.map((data, index) => {
-                    return { x: index, y: data.price }
-                });
+                TimeSeriesStore.data = utils.sortTimeSeriesDataByPrice(data);
+                TimeSeriesStore.updateAttributes();
             })
             .catch(err => { console.log(err) });
     }
 
-
-    onStartSampling = () => {
-        this.onStopSampling();
-        SimulationStore.windowPos = 0;
-        SimulationStore.intervalId = setInterval(this.timer, 1000);
-    }
-
-    onStopSampling = () => {
-        clearInterval(SimulationStore.intervalId);
-    }
-
-    timer = () => {
-
-        const { windowPos, timeSeriesData, period } = SimulationStore;
-
-        console.log(`index ${windowPos}`);
-
-
-        // get the N object of date and prices
-        const datas = timeSeriesData.slice(windowPos, windowPos + period);
-        const prices = datas.map(data => { return parseFloat(data.price); });
-
-        SamplingStore.currentSampleValues = prices;
-
-
-        SimulationStore.windowPos = windowPos + 1;
-
-        // stop sampling
-        if (SimulationStore.windowPos > (timeSeriesData.length - period)) {
-            this.onStopSampling();
-        }
-    }
-
-    /* What is this for?!?!?!*/
-    getSample = () => {
-        if (SimulationStore.intervalId != null) {
-            // configure sample appearance
-            var sampleData = [];
-            for (var i = SimulationStore.windowPos; i < SimulationStore.windowPos + SimulationStore.period; i++) {
-                sampleData.push({ x: i, y: SimulationStore.timeSeriesGraphData[i]['y'] });
-            }
-            return sampleData;
-        } else {
-            return [{ x: 100, y: 100 }];
-        }
-
-    }
-
-
     render() {
 
-        const { input, timeSeriesAttributes } = SimulationStore;
+        const { input } = InputStore;
 
         return (
 
@@ -124,38 +67,29 @@ export default class InputForm extends React.Component {
                 <Grid>
 
                     {/* Form Inputs */}
-                    <Grid.Column width={8}>
+                    <Grid.Column>
                         <Form>
                             <Form.Group widths='equal'>
                                 <Form.Dropdown
-                                    label='Period' name='period'
-                                    fluid selection value={input.period}
+                                    label='Period' name='period' fluid selection
+                                    value={input.period} options={Options.period}
                                     onChange={this.handleInputSelectionChange}
-                                    options={Options.period}
                                 />
                                 <Form.Dropdown
-                                    label='Symbol' name='symbol'
-                                    fluid selection value={input.symbol}
+                                    label='Symbol' name='symbol' fluid selection
+                                    value={input.symbol} options={Options.symbol}
                                     onChange={this.handleInputSelectionChange}
-                                    options={Options.symbol}
-                                />
-                            </Form.Group>
-                            <Form.Group widths='equal'>
-                                <Form.Dropdown
-                                    label='Interval' name='interval'
-                                    fluid selection value={input.interval}
-                                    onChange={this.handleInputSelectionChange}
-                                    options={Options.interval}
                                 />
                                 <Form.Dropdown
-                                    label='Output Size' name='outputSize'
-                                    fluid selection value={input.outputSize}
+                                    label='Interval' name='interval' fluid selection
+                                    value={input.interval} options={Options.interval}
                                     onChange={this.handleInputSelectionChange}
-                                    options={Options.outputSize}
                                 />
-                            </Form.Group>
-
-                            <Form.Group widths='equal'>
+                                <Form.Dropdown
+                                    label='Output Size' name='outputSize' fluid selection
+                                    value={input.outputSize} options={Options.outputSize}
+                                    onChange={this.handleInputSelectionChange}
+                                />
                                 <Form.Button
                                     color='orange' fluid content='Default Inputs'
                                     onClick={this.onDefaultInputs}
@@ -169,26 +103,7 @@ export default class InputForm extends React.Component {
                                     onClick={this.onSubmitInputs}
                                 />
                             </Form.Group>
-
-
-
                         </Form>
-                    </Grid.Column>
-
-
-                    {/* Stats */}
-                    <Grid.Column width={8}>
-                        <p><strong>Date: </strong>{`${timeSeriesAttributes.startDate} to ${timeSeriesAttributes.endDate}`}</p>
-                        <p><strong>Price: </strong>{`${timeSeriesAttributes.startPrice} to ${timeSeriesAttributes.endPrice}`}</p>
-                        <p><strong>Samples: </strong>{`${timeSeriesAttributes.numberDataPoints}`}</p>
-
-                        <Form>
-                            <Form.Group widths='equal'>
-                                <Form.Button fluid type='button' onClick={this.onStartSampling} content='Start Sampling' />
-                                <Form.Button fluid type='button' onClick={this.onStopSampling} content='Stop Sampling' />
-                            </Form.Group>
-                        </Form>
-
                     </Grid.Column>
                 </Grid>
             </Segment>

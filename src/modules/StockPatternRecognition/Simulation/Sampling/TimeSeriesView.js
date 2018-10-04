@@ -1,25 +1,27 @@
 import * as React from 'react';
-import { Header, Grid, Divider, Form, Segment } from 'semantic-ui-react'
+import { Header, Divider, Segment } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
 import {
     FlexibleWidthXYPlot, 
     LineMarkSeries, XAxis, YAxis, VerticalGridLines, HorizontalGridLines
 } from 'react-vis';
 
-import SimulationStore from '../SimulationStore';
+import TimeSeriesStore from '../Stores/TimeSeriesStore';
 
 
 @observer
 export default class TimeSeriesView extends React.Component {
 
     render() {
-
-        const { timeSeriesGraphData } = SimulationStore;
-
+        
+        const stockTimeSeries = TimeSeriesStore.data.map((data, index) => {
+            return { x: index, y: data.price }
+        });
 
         return (
 
             <Segment>
+
                 {/* Time Series Chart */}
                 <Header as='h2' content='Time Series Data' />
                 <Divider />
@@ -28,8 +30,9 @@ export default class TimeSeriesView extends React.Component {
                     <HorizontalGridLines />
                     <XAxis />
                     <YAxis />
-                    <LineMarkSeries data={timeSeriesGraphData.slice()} />
+                    <LineMarkSeries data={stockTimeSeries} />
                 </FlexibleWidthXYPlot>
+                
             </Segment>
 
 
