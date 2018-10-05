@@ -6,6 +6,8 @@ import _ from 'lodash';
 
 import * as utils from '../Stores/utils';
 import StockPatternApi from '../../../../api/StockPatternApi';
+import TimeSeriesStore from './TimeSeriesStore';
+import InputStore from './InputStore';
 
 
 class SamplingStore {
@@ -13,6 +15,7 @@ class SamplingStore {
     @observable windowPos = null;
     @observable intervalId = null;
     @observable period = null;
+    @observable symbol = null;
 
     @observable currentSampleValues = [0, 1, 2, 3, 4, 5, 6, 7, 7];
 
@@ -28,6 +31,9 @@ class SamplingStore {
             .then(res => { this.patterns = res.data.slice(); })
             .catch(err => { console.log(err) });
 
+        if (this.patterns.length <= 0) {
+            console.log("Cant compare if theres no patterns to compare to");
+        }
     }
 
     @action
@@ -40,11 +46,14 @@ class SamplingStore {
         this.currentSampleValues = values;
     }
 
-    classifySample = (sampleValues) => {
+    classifySample = (index, sampleValues) => {
+
         var dtw = new DTW({ distanceMetric: 'squaredEuclidean' });
-        const THRESSHOLD = 20;
+        const THRESSHOLD = 25;
 
         var samplePatternValues = sampleValues;
+
+        var multipleMatches = [];
 
         this.patterns.forEach(pattern => {
             // normalize -> scale
@@ -54,13 +63,33 @@ class SamplingStore {
             if (cost <= THRESSHOLD) {
                 console.log("Matched sample with " + pattern.name + ' @ ' + cost);
 
-                this.matches.push({
+                multipleMatches.push({
                     name: pattern.name,
                     cost: cost,
-                    values: normalizedSampleValues
+                    values: normalizedSampleValues,
+                    date: TimeSeriesStore.data[index].date,
+                    period: this.period,
+                    symbol: this.symbol
                 });
             }
         });
+
+        multipleMatches.sort((a, b) => {
+            return a.cost - b.cost;
+        });
+
+        if (multipleMatches.length >= 1) {
+            const chosenMatch = multipleMatches[0];
+            this.matches.push(chosenMatch);
+        }
+
+        // Get last match if it exists
+        // compare if below 3 days apart
+
+
+
+
+        // get smallest match
     }
 }
 

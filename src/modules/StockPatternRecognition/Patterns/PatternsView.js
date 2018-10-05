@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Card, Button, Form, Header, Segment } from 'semantic-ui-react';
+import { Card, Button, Form, Header, Segment, Grid } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import {
     FlexibleWidthXYPlot, LineMarkSeries, HorizontalGridLines, VerticalGridLines, XAxis, YAxis
@@ -102,12 +102,13 @@ export default class PatternsView extends React.Component {
     pruneSimilarDates = () => {
         // Prune patterns that have similar dates, same name and values
     }
+    refresh = () => {
+        PatternsStore.computeStats();
+    }
 
     render() {
 
-
-
-        const { definedPatterns, sampledPatterns } = PatternsStore;
+        const { definedPatterns, sampledPatterns, patternCounts, periodCounts } = PatternsStore;
 
         return (
             <div>
@@ -157,10 +158,33 @@ export default class PatternsView extends React.Component {
                             <Form.Button fluid onClick={this.pruneAllCriterias} content='Prune All Criterias' />
                             <Form.Button fluid onClick={this.pruneSameValues} content='Prune Same Values' />
                             <Form.Button fluid onClick={this.pruneWorstValues} content='Prune Worst Values' />
+                            <Form.Button fluid onClick={this.refresh} content='Refresh' />
                         </Form.Group>
                     </Form>
                 </Segment>
 
+                {/* Statistics */}
+                <Segment>
+                    <Header as='h1' content='Dataset Statistics' />
+                    <Grid>
+                        <Grid.Column>
+                            {patternCounts.map(pattern => {
+                                return (<p key={pattern.name}>{`${pattern.name} with ${pattern.count}`}</p>);
+                            })}
+                        </Grid.Column>
+
+                        <Grid.Column>
+                            {periodCounts.map((pattern, index) => {
+                                return (<p key={index}>{`${pattern.name} days with ${pattern.count}`}</p>);
+                            })}
+                        </Grid.Column>
+                    </Grid>
+
+
+
+                </Segment>
+
+                {/* Samples */}
                 <Segment>
                     <Header as='h1' content='Sampled Match Stock Patterns' />
 
@@ -176,6 +200,9 @@ export default class PatternsView extends React.Component {
 
                                     <Card.Content>
                                         <Card.Meta>{`Cost: ${pattern.cost.toFixed(2)}`}</Card.Meta>
+                                        <Card.Meta>{`Symbol: ${pattern.symbol}`}</Card.Meta>
+                                        <Card.Meta>{`Date: ${pattern.date}`}</Card.Meta>
+                                        <Card.Meta>{`Period: ${pattern.period}`}</Card.Meta>
                                     </Card.Content>
 
                                     <Card.Content>
@@ -202,6 +229,18 @@ export default class PatternsView extends React.Component {
                     </Card.Group>
                 </Segment>
 
+
+                <Segment>
+                    <p>more pattern observation in lower periods BUT more false positive -> patterns is not easily distinguished, </p>
+                    <p>less pattern observation in higher periods BUT more true positive -> patterns are a lot more recognizable </p>
+                    <p>incremental learning gives more labels BUT new labels become less distinguishable -> need to reduce threshold </p>
+                    <p>Little patterns in non-volatile stocks</p>
+                    <p>Patterns with alot of maximas and minimas are detected more in short term due to stock osciliation and cost function </p>
+                    <p>Pattenrs with less min/maximas are detected more accurately</p>
+                    <p> Adding slanted patterns -> more observations in long term -> more incorrect observations in short term</p>
+
+                    <p>Longer periods could detect substantially more patterns after using incremental learning acorss multiple stock rpices</p>
+                </Segment>
             </div>
         )
     }

@@ -35,6 +35,7 @@ export default class SamplingView extends React.Component {
     }
 
     onStartSampling = () => {
+        this.matches = [];
         SamplingStore.clear();
         SamplingStore.windowPos = 0;
         SamplingStore.intervalId = setInterval(this.timer, 5);
@@ -50,7 +51,7 @@ export default class SamplingView extends React.Component {
         const prices = datas.map(data => { return data.price; });
 
         SamplingStore.setCurrentSampleValues(prices);   // set values for graph
-        SamplingStore.classifySample(prices);           // compare and classift
+        SamplingStore.classifySample(windowPos, prices);           // compare and classift
         SamplingStore.windowPos = windowPos + 1;        // increment samples
 
         // stop sampling
@@ -163,7 +164,10 @@ export default class SamplingView extends React.Component {
                                 <Card className='' key={index}>
                                     <Card.Content>
                                         <Card.Header>{pattern.name}</Card.Header>
-                                        <Card.Description> {`cost: ${pattern.cost}`}</Card.Description>
+                                        <Card.Meta>{`Cost: ${pattern.cost.toFixed(2)}`}</Card.Meta>
+                                        <Card.Meta>{`Symbol: ${pattern.symbol}`}</Card.Meta>
+                                        <Card.Meta>{`Date: ${pattern.date}`}</Card.Meta>
+                                        <Card.Meta>{`Period: ${pattern.period}`}</Card.Meta>
                                     </Card.Content>
 
                                     <Card.Content>

@@ -11,6 +11,10 @@ class PatternsStore {
 
     @observable definedPatterns = [];
     @observable sampledPatterns = [];
+    @observable patternCounts = [];
+
+    @observable periodCounts = [];
+
 
     @action
     setup = () => {
@@ -25,32 +29,62 @@ class PatternsStore {
 
             // Add defined if no labelled patterns exist
             if (sampledPatterns.length <= 0) {
-                MockPatterns.defined.forEach(pattern => {
-                    StockPatternApi.create(pattern)
-                        .then(res => console.log(res))
-                        .catch(err => console.log(err));
-                });
+                for (var i = 0; i < 20; i++) {
+                    MockPatterns.defined.forEach(pattern => {
 
-            // Store data from db to local for use
+                        var newPattern = pattern;
+                        newPattern.values = pattern.values.map(value => {
+                            return value + Math.random() * 2;
+                        });
+
+                        StockPatternApi.create(newPattern)
+                            .then(res => console.log(res))
+                            .catch(err => console.log(err));
+                    });
+                }
+
+
+                // Store data from db to local for use
             } else {
                 this.sampledPatterns = sampledPatterns;
                 console.log(this.sampledPatterns);
             }
 
         }).catch(err => console.log(err));
-
+        this.patternCounts = [];
+        this.computeStats();
     }
 
-    populateSampledPatterns = () => {
+    computeStats = () => {
+        this.patternCounts = [];
 
-        MockPatterns.sampled.forEach(sample => {
-            const data = {
-                name: sample.name,
-                cost: sample.cost,
-                values: sample.values
-            };
-            StockPatternApi.create(data).then(res => console.log(res)).catch(err => console.log(err));
+        this.definedPatterns.map(pattern => {
 
+            const patternName = pattern.name;
+
+            var matches = this.sampledPatterns.filter(sample => {
+                console.log(sample.name + ' vs. ' + patternName);
+                return sample.name === patternName && sample.cost != 0;
+            })
+            this.patternCounts.push({
+                name: patternName,
+                count: matches.length
+            });
+        });
+
+        this.periodCounts = [];
+
+        var uniquePeriods = _.union(this.sampledPatterns.map(pattern => {return pattern.period}));
+
+        uniquePeriods.forEach(period => {
+            var numPeriodCount = this.sampledPatterns.filter(pattern => {
+                return pattern.period === period;
+            }).length;
+
+            this.periodCounts.push({
+                name: period,
+                count: numPeriodCount
+            });
         });
     }
 }

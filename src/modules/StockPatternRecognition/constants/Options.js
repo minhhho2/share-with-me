@@ -23,6 +23,11 @@ const OPTIONS = {
             value: 'ASX:ANZ',
         },  
         {
+            key: 'ASX:TLS',
+            text: 'ASX:TLS',
+            value: 'ASX:TLS',
+        },  
+        {
             key: 'ASX:CBA',
             text: 'ASX:CBA',
             value: 'ASX:CBA',
@@ -37,6 +42,11 @@ const OPTIONS = {
             text: 'ASX:ORG',
             value: 'ASX:ORG',
         },  
+        {
+            key: 'ASX:PLS',
+            text: 'ASX:PLS',
+            value: 'ASX:PLS',
+        }
     ],
     outputSize: [
         {

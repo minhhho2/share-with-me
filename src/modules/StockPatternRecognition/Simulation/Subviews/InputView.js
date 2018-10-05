@@ -60,6 +60,7 @@ export default class InputView extends React.Component {
                 // Store sorted oldest to latest price data
                 TimeSeriesStore.data = utils.sortTimeSeriesDataByPrice(data);
                 TimeSeriesStore.updateAttributes();
+                SamplingStore.symbol = input.symbol;
             })
             .catch(err => { console.log(err) });
     }
