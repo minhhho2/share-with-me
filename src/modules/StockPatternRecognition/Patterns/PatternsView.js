@@ -32,16 +32,19 @@ export default class PatternsView extends React.Component {
 
         PatternsStore.sampledPatterns = newSampledPatterns.slice();
     }
+
     pruneAll = () => {
         const { sampledPatterns } = PatternsStore;
 
         var promises = [];
 
+        // Delete all patterns
         sampledPatterns.forEach(data => {
             promises.push(StockPatternApi.delete(data._id.$oid));
         });
 
-        Promise.all(promises).then(_ => {
+        // Create new patterns after deleting everything
+        Promise.all(promises).then(() => {
             console.log(`Pruned all of ${sampledPatterns.length}`);
             PatternsStore.createPatterns();
         });
@@ -50,21 +53,6 @@ export default class PatternsView extends React.Component {
     pruneAllCriterias = () => {
         this.pruneSameValues();
         this.pruneWorstValues();
-    }
-
-
-    differenceArrays = (valuesOne, valuesTwo) => {
-        if (valuesOne.length !== valuesTwo.length) {
-            return 999999;
-        }
-
-        var difference = 0;
-
-        for (var i = 0; i < valuesOne.length; i++) {
-            difference += Math.abs(valuesOne[i] - valuesTwo[i]);
-        }
-
-        return difference;
     }
 
     pruneSameValues = () => {
@@ -77,7 +65,7 @@ export default class PatternsView extends React.Component {
                 const a = sampledPatterns[i];
                 const b = sampledPatterns[j];
 
-                const difference = this.differenceArrays(a.values, b.values);
+                const difference = utils.differenceArrays(a.values, b.values);
 
                 if (a.name === b.name && a.values.length === b.values.length && difference <= 1) {
                     prunableId.push(a._id.$oid);

@@ -28,10 +28,12 @@ class SamplingStore {
     @observable matches = [];   // sampled matches from current data ~ NOT from DB/Dataset
     @observable patterns = [];  // previous matches from DB/Dataset
 
-
     @action
     setup = () => {
-        this.clear();
+
+        this.matches = [];
+        this.period = 16;
+        this.windowPos = 0;
 
         // Get Sampled Patterns
         StockPatternApi.readAll()
@@ -47,7 +49,7 @@ class SamplingStore {
     clear = () => {
         clearInterval(this.intervalId);
         this.windowPos = 0;
-        this.period = 14;
+        this.peirod = 16;
     }
 
     @action
@@ -55,45 +57,76 @@ class SamplingStore {
         this.currentSampleValues = values;
     }
 
-    classifySample = (index, sampleValues) => {
+    /*  
+        kNN with threshold
+        Incremental batch learning with very low threshold
+
+    */
+    classifySample = (sample) => {
 
         const { symbol } = InputStore.input;
+        const { data } = TimeSeriesStore;
 
-        var sampleMatches = [];
+        var neighbors = [];
 
-        // Calculate distance between each neighbor
+        // Calculate distance for all neighbors
         this.patterns.forEach(pattern => {
+            var distance = processing.distance(sample.values, pattern.values);
+            var normalizedSample = utils.normalize(sample.values);
 
-            var distance = processing.distance(sampleValues, pattern.values);
 
-            var normalizedSampleValues = utils.normalize(sampleValues, pattern.values);
+            const newStockPattern = StockPattern(pattern.name, distance,
+                normalizedSample, data[sample.index].date, this.period, symbol);
 
-            if (distance <= algoParameters.distanceThreshold) {
-                console.log("Matched sample with " + pattern.name + ' @ ' + distance);
-
-                const newStockPattern = StockPattern(
-                    pattern.name, distance, normalizedSampleValues,
-                    TimeSeriesStore.data[index].date, this.period, symbol
-                );
-
-                sampleMatches.push(newStockPattern);
-            }
+            neighbors.push(newStockPattern);
         });
 
-        sampleMatches.sort((a, b) => {
+        neighbors.sort((a, b) => {
             return a.cost - b.cost;
         });
 
-        if (sampleMatches.length >= 1) {
-            console.log(`1st and lower cost: ${sampleMatches[0].cost} and last and highest cost ${sampleMatches[sampleMatches.length - 1].cost}`);
 
-            const chosenMatch = sampleMatches[0];
-            this.matches.push(chosenMatch);
+        if (neighbors.length >= 1) {
+
+            var lowestMatch = neighbors[0];
+
+            // check if below threshold
+            if (lowestMatch.cost <= algoParameters.distanceThreshold) {
+                console.log(`1st and lower cost: ${neighbors[0].cost} and last and highest cost ${neighbors[neighbors.length - 1].cost}`);
+
+                // can compare to last
+                if (this.matches.length >= 1) {
+                    const lastMatch = this.matches[this.matches.length - 1];
+
+                    const daysApart = this.daysApart(lastMatch.date, lowestMatch.date);
+                    if (daysApart <= 3) {
+
+                        console.log(`Days apart is ${daysApart} so replacing last`);
+
+                        // compare cost
+                        lowestMatch = lastMatch.cost < lowestMatch.cost ? lastMatch : lowestMatch;
+                        this.matches[this.matches.length - 1] = lowestMatch;
+                    } else {
+                        console.log("adding match");
+                        // for if its not in between days
+                        this.matches.push(lowestMatch);
+                    }
+                } else {
+                    // for first addition
+                    this.matches.push(lowestMatch);
+                }
+            }
         }
+    }
 
-        // Get last match if it exists
-        // compare if below 3 days apart
-        // get smallest match
+
+    // Get last match if it exists
+    // compare if below 3 days apart
+    // get smallest match
+
+
+    daysApart = (dateOne, dateTwo) => {
+        return Math.abs(Math.round((dateTwo - dateOne) / (1000 * 60 * 60 * 24)));
     }
 
 }

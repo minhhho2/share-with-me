@@ -5,6 +5,7 @@ import MockPatterns from '../constants/MockPatterns';
 import _ from 'lodash';
 
 import StockPatternApi from '../../../api/StockPatternApi';
+import * as utils from '../Simulation/Stores/utils';
 
 
 class PatternsStore {
@@ -27,14 +28,15 @@ class PatternsStore {
             this.sampledPatterns = res.data.slice();
             console.log(this.sampledPatterns);
 
+            // Create patterns if empty
+            if (this.sampledPatterns.length <= 0) {
+                this.createPatterns();
+            }
+
+            this.computeStats();
+
         }).catch(err => console.log(err));
 
-        // Create patterns if empty
-        if (this.sampledPatterns.length <= 0) {
-            this.createPatterns();
-        }
-
-        this.computeStats();
     }
 
     computeStats = () => {
@@ -69,48 +71,44 @@ class PatternsStore {
         });
     }
 
+
     createPatterns = () => {
         var promises = [];
 
+        // Create patterns
         this.definedPatterns.forEach(pattern => {
             promises.concat(this.createPatternSlantedDown(pattern));
             promises.concat(this.createPatternSlantedUp(pattern));
-            //this.createPatternNoise(pattern);
+            //promises.concat(this.createPatternNoise(pattern));
         });
 
+        // Read pattersn from database
         Promise.all(promises).then(
             StockPatternApi.readAll().then(res => {
 
-                var sampledPatterns = res.data.slice();
+                this.sampledPatterns = res.data.slice();
+                console.log(this.sampledPatterns);
 
-                // Store patterns
-                if (sampledPatterns.length > 0) {
-                    this.sampledPatterns = sampledPatterns;
-                    console.log(this.sampledPatterns);
-
-                }
             }).catch(err => console.log(err))
-
-        ).catch(err => console.log(err));
-
+        );
     }
 
     createPatternSlantedDown = (pattern) => {
 
         var promises = [];
 
-
-        for (var offset = 0; offset <= 15; offset += 5) {    // TODO: SET to 30
+        for (var offset = 0; offset <= 6; offset += 3) {    // TODO: SET to 30
 
             var dupPattern = JSON.parse(JSON.stringify(pattern));
             dupPattern.values = dupPattern.values.map((value, index) => {
                 return value + (dupPattern.values.length - 1 - index) * offset;
             });
 
-            var promise = StockPatternApi.create(dupPattern);
-            promise.then(res => console.log(res))
-                .catch(err => console.log(err));
+            dupPattern.values = utils.normalize(dupPattern.values);
+            dupPattern.name = `${pattern.name} slanted down @ ${offset}`;
 
+            var promise = StockPatternApi.create(dupPattern);
+            promise.then(res => console.log(res)).catch(err => console.log(err));
             promises.push(promise);
         }
 
@@ -122,17 +120,18 @@ class PatternsStore {
         var promises = [];
 
         // slant up in offsets of 5
-        for (var offset = 0; offset <= 15; offset += 5) {    // TODO: SET to 30
+        for (var offset = 0; offset <= 6; offset += 3) {    // TODO: SET to 30
 
             var dupPattern = JSON.parse(JSON.stringify(pattern));
             dupPattern.values = dupPattern.values.map((value, index) => {
                 return value + index * offset;
             });
 
-            var promise = StockPatternApi.create(dupPattern);
-            promise.then(res => console.log(res))
-                .catch(err => console.log(err));
+            dupPattern.values = utils.normalize(dupPattern.values);
+            dupPattern.name = `${pattern.name} slanted up @ ${offset}`;
 
+            var promise = StockPatternApi.create(dupPattern);
+            promise.then(res => console.log(res)).catch(err => console.log(err));
             promises.push(promise);
         }
 
@@ -140,18 +139,23 @@ class PatternsStore {
     }
 
     createPatternNoise = (pattern) => {
+        var promises = [];
+
         for (var i = 0; i < 5; i++) {
 
             var dupPattern = JSON.parse(JSON.stringify(pattern));
             dupPattern.values = dupPattern.values.map(value => {
-                return value + Math.random() * 50;
+                return value + Math.random() * 30;
             });
 
-            StockPatternApi.create(dupPattern)
-                .then(res => console.log(res))
-                .catch(err => console.log(err));
+            dupPattern.values = utils.normalize(dupPattern.values);
+
+            var promise = StockPatternApi.create(dupPattern);
+            promise.then(res => console.log(res)).catch(err => console.log(err));
+            promises.push(promise);
         }
 
+        return promises;
     }
 }
 

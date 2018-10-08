@@ -49,16 +49,30 @@ export function createCoordinateData(values) {
 /* 
     Normalize measurement array. Scales values in measurement array to the min max range of targetArr
 */
-export function normalize(measurementArr, targetArr) {
+export function normalize(measurementArr) {
+
     const rMin = _.min(measurementArr);
     const rMax = _.max(measurementArr);
-    const tMin = _.min(targetArr);
-    const tMax = _.max(targetArr);
+    const tMin = 0;
+    const tMax = 100; 
 
     const normalized = measurementArr.map(el => {
-        var normalizedValue = (el - rMin) / (rMax - rMin) * (tMax - tMin) + tMin;
-        return parseFloat(normalizedValue.toFixed(2));
+        return (el - rMin) / (rMax - rMin) * (tMax - tMin) + tMin;
     });
 
     return normalized;
+}
+
+export function differenceArrays(valuesOne, valuesTwo){
+    if (valuesOne.length !== valuesTwo.length) {
+        return 999999;
+    }
+
+    var difference = 0;
+
+    for (var i = 0; i < valuesOne.length; i++) {
+        difference += Math.abs(valuesOne[i] - valuesTwo[i]);
+    }
+
+    return difference;
 }

@@ -1,5 +1,5 @@
 const PARAMETERS = {
-    distanceThreshold: 100,
+    distanceThreshold: 1250,
     maxNeighbours: 10
 }
 

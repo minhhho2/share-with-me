@@ -50,8 +50,6 @@ export default class SamplingView extends React.Component {
         }
 
         this.matches = [];
-        SamplingStore.clear();
-        SamplingStore.windowPos = 0;
         SamplingStore.intervalId = setInterval(this.timer, 5);
     }
 
@@ -65,7 +63,13 @@ export default class SamplingView extends React.Component {
         const prices = datas.map(data => { return data.price; });
 
         SamplingStore.setCurrentSampleValues(prices);   // set values for graph
-        SamplingStore.classifySample(windowPos, prices);           // compare and classift
+
+        const sample = {
+            index: windowPos,
+            values: prices
+        }
+
+        SamplingStore.classifySample(sample);           // compare and classift
         SamplingStore.windowPos = windowPos + 1;        // increment samples
 
         // stop sampling
