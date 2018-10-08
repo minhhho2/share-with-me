@@ -3,9 +3,6 @@
 import { observable, action } from 'mobx';
 import _ from 'lodash';
 
-/* 
-    Contains input for time series price selection
-*/
 class TimeSeriesStore {
 
     @observable data = [];
@@ -34,5 +31,4 @@ class TimeSeriesStore {
     }
 }
 
-// get sectors
 export default new TimeSeriesStore();

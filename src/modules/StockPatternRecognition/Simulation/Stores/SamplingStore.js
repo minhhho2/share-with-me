@@ -1,7 +1,6 @@
 
 
 import { observable, action } from 'mobx';
-import DTW from 'dtw';
 import _ from 'lodash';
 
 import * as utils from '../Stores/utils';
@@ -21,7 +20,7 @@ class SamplingStore {
 
     @observable windowPos = null;
     @observable intervalId = null;
-    @observable period = 14;
+    @observable period = null;
     @observable symbol = null;
 
     @observable currentSampleValues = [0, 1, 2, 3, 4, 5, 6, 7, 7];
@@ -32,7 +31,7 @@ class SamplingStore {
 
     @action
     setup = () => {
-        this.period = 30;
+        this.clear();
 
         // Get Sampled Patterns
         StockPatternApi.readAll()
@@ -47,6 +46,8 @@ class SamplingStore {
     @action
     clear = () => {
         clearInterval(this.intervalId);
+        this.windowPos = 0;
+        this.period = 14;
     }
 
     @action
@@ -58,7 +59,7 @@ class SamplingStore {
 
         const { symbol } = InputStore.input;
 
-        var multipleMatches = [];
+        var sampleMatches = [];
 
         // Calculate distance between each neighbor
         this.patterns.forEach(pattern => {
@@ -75,18 +76,18 @@ class SamplingStore {
                     TimeSeriesStore.data[index].date, this.period, symbol
                 );
 
-                multipleMatches.push(newStockPattern);
+                sampleMatches.push(newStockPattern);
             }
         });
 
-        multipleMatches.sort((a, b) => {
+        sampleMatches.sort((a, b) => {
             return a.cost - b.cost;
         });
 
-        if (multipleMatches.length >= 1) {
-            console.log(`1st and lower cost: ${multipleMatches[0].cost} and last and highest cost ${multipleMatches[multipleMatches.length - 1].cost}`);
+        if (sampleMatches.length >= 1) {
+            console.log(`1st and lower cost: ${sampleMatches[0].cost} and last and highest cost ${sampleMatches[sampleMatches.length - 1].cost}`);
 
-            const chosenMatch = multipleMatches[0];
+            const chosenMatch = sampleMatches[0];
             this.matches.push(chosenMatch);
         }
 

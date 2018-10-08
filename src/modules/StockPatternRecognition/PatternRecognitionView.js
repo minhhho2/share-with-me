@@ -35,7 +35,8 @@ export default class PatternRecognitionView extends React.Component {
 
         return (
 
-            <div className='p-5'>
+            <div className='p-2'>
+                
                 {/* Sub view selection*/}
                 <Step.Group fluid>
                     {views.map((view, index) => {

@@ -12,7 +12,6 @@ class PatternsStore {
     @observable definedPatterns = [];
     @observable sampledPatterns = [];
     @observable patternCounts = [];
-
     @observable periodCounts = [];
 
 
@@ -25,33 +24,16 @@ class PatternsStore {
         // Get Sampled Patterns
         StockPatternApi.readAll().then(res => {
 
-            var sampledPatterns = res.data.slice();
-
-            // Add defined if no labelled patterns exist
-            if (sampledPatterns.length <= 0) {
-                for (var i = 0; i < 20; i++) {
-                    MockPatterns.defined.forEach(pattern => {
-
-                        var newPattern = pattern;
-                        newPattern.values = pattern.values.map(value => {
-                            return value + Math.random() * 2;
-                        });
-
-                        StockPatternApi.create(newPattern)
-                            .then(res => console.log(res))
-                            .catch(err => console.log(err));
-                    });
-                }
-
-
-                // Store data from db to local for use
-            } else {
-                this.sampledPatterns = sampledPatterns;
-                console.log(this.sampledPatterns);
-            }
+            this.sampledPatterns = res.data.slice();
+            console.log(this.sampledPatterns);
 
         }).catch(err => console.log(err));
-        this.patternCounts = [];
+
+        // Create patterns if empty
+        if (this.sampledPatterns.length <= 0) {
+            this.createPatterns();
+        }
+
         this.computeStats();
     }
 
@@ -73,7 +55,7 @@ class PatternsStore {
 
         this.periodCounts = [];
 
-        var uniquePeriods = _.union(this.sampledPatterns.map(pattern => {return pattern.period}));
+        var uniquePeriods = _.union(this.sampledPatterns.map(pattern => { return pattern.period }));
 
         uniquePeriods.forEach(period => {
             var numPeriodCount = this.sampledPatterns.filter(pattern => {
@@ -85,6 +67,91 @@ class PatternsStore {
                 count: numPeriodCount
             });
         });
+    }
+
+    createPatterns = () => {
+        var promises = [];
+
+        this.definedPatterns.forEach(pattern => {
+            promises.concat(this.createPatternSlantedDown(pattern));
+            promises.concat(this.createPatternSlantedUp(pattern));
+            //this.createPatternNoise(pattern);
+        });
+
+        Promise.all(promises).then(
+            StockPatternApi.readAll().then(res => {
+
+                var sampledPatterns = res.data.slice();
+
+                // Store patterns
+                if (sampledPatterns.length > 0) {
+                    this.sampledPatterns = sampledPatterns;
+                    console.log(this.sampledPatterns);
+
+                }
+            }).catch(err => console.log(err))
+
+        ).catch(err => console.log(err));
+
+    }
+
+    createPatternSlantedDown = (pattern) => {
+
+        var promises = [];
+
+
+        for (var offset = 0; offset <= 15; offset += 5) {    // TODO: SET to 30
+
+            var dupPattern = JSON.parse(JSON.stringify(pattern));
+            dupPattern.values = dupPattern.values.map((value, index) => {
+                return value + (dupPattern.values.length - 1 - index) * offset;
+            });
+
+            var promise = StockPatternApi.create(dupPattern);
+            promise.then(res => console.log(res))
+                .catch(err => console.log(err));
+
+            promises.push(promise);
+        }
+
+        return promises;
+    }
+
+    createPatternSlantedUp = (pattern) => {
+
+        var promises = [];
+
+        // slant up in offsets of 5
+        for (var offset = 0; offset <= 15; offset += 5) {    // TODO: SET to 30
+
+            var dupPattern = JSON.parse(JSON.stringify(pattern));
+            dupPattern.values = dupPattern.values.map((value, index) => {
+                return value + index * offset;
+            });
+
+            var promise = StockPatternApi.create(dupPattern);
+            promise.then(res => console.log(res))
+                .catch(err => console.log(err));
+
+            promises.push(promise);
+        }
+
+        return promises;
+    }
+
+    createPatternNoise = (pattern) => {
+        for (var i = 0; i < 5; i++) {
+
+            var dupPattern = JSON.parse(JSON.stringify(pattern));
+            dupPattern.values = dupPattern.values.map(value => {
+                return value + Math.random() * 50;
+            });
+
+            StockPatternApi.create(dupPattern)
+                .then(res => console.log(res))
+                .catch(err => console.log(err));
+        }
+
     }
 }
 

@@ -1,14 +1,10 @@
 const MOCK_PATTERNS = {
     defined: [
-        {
-            name: 'Head and Shoulder',
-            cost: 0,
-            values: [0, 2.5, 5, 2.5, 0, 5, 10, 5, 0, 2.5, 5, 2.5, 0]
-        },
+
         {
             name: 'Double Top',
             cost: 0,
-            values: [0, 3, 6, 9, 6, 3, 0, 3, 6, 9, 6, 3, 0]
+            values: [0, 25, 50, 75, 100, 75, 50, 25, 0, 25, 50, 75, 100, 75, 50, 25, 0]
         },
     ],
     sampled: [
@@ -49,3 +45,12 @@ const MOCK_PATTERNS = {
 
 
 module.exports = MOCK_PATTERNS;
+
+
+/*
+{
+    name: 'Head and Shoulder',
+    cost: 0,
+    values: [0, 2.5, 5, 2.5, 0, 5, 10, 5, 0, 2.5, 5, 2.5, 0]
+}
+*/

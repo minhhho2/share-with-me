@@ -1,16 +1,4 @@
 const OPTIONS = {
-    period: [
-        {
-            key: 'TIME_SERIES_DAILY',
-            text: 'TIME_SERIES_DAILY',
-            value: 'TIME_SERIES_DAILY',
-        },
-        {
-            key: 'TIME_SERIES_INTRADAY',
-            text: 'TIME_SERIES_INTRADAY',
-            value: 'TIME_SERIES_INTRADAY',
-        }
-    ],
     symbol: [
         {
             key: 'ASX:XJO',

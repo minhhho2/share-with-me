@@ -13,7 +13,7 @@ export default class SimulationView extends React.Component {
     render() {
 
         return (
-            <div className='p-5'>
+            <div className='p-3'>
 
                 <Header className='text-center' as='h1' content='Pattern Processing View' />
                 <Divider className='m-5' />

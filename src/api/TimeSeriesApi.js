@@ -11,21 +11,14 @@ class TimeSeriesApi {
 
     get = (symbol, outputSize) => {
 
-        const period = 'TIME_SERIES_DAILY'; 
-
-        // Check arguments
-        this.checkArguments(period, symbol, outputSize);
+        this.checkArguments(symbol, outputSize); // check arguments
 
         // Make Api Call - example - https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=ASX:XJO&interval=60min&outputsize=full&apikey=${APIKEY}
-        return axios.get(`${BASE_URL}query?function=${period}&symbol=${symbol}&outputsize=${outputSize}&apikey=${APIKEY}`);
+        return axios.get(`${BASE_URL}query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=${outputSize}&apikey=${APIKEY}`);
     }
 
-    checkArguments = (period, symbol, outputSize) => {
+    checkArguments = (symbol, outputSize) => {
         
-        // check period
-        if (!AlphaOptions.periodOptions.includes(period)) {
-            console.log(`Error @ TimeSeriesApi.js: Incorrect period, ${period}, provided`);
-        }
         // check symbol
         if (!AlphaOptions.symbolOptions.includes(symbol)) {
             console.log(`Error @ TimeSeriesApi.js: Incorrect symbol, ${symbol},  provided`);

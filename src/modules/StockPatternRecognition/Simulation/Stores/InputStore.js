@@ -4,9 +4,6 @@ import { observable, action } from 'mobx';
 import _ from 'lodash';
 import Options from '../../constants/Options';
 
-/* 
-    Contains input for time series price selection
-*/
 class InputStore {
 
     @observable input = {
@@ -31,6 +28,4 @@ class InputStore {
     }
 }
 
-
-// get sectors
 export default new InputStore();

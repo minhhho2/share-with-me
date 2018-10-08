@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Card, Button, Form, Header, Segment, Grid } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import {
-    FlexibleWidthXYPlot, LineMarkSeries, HorizontalGridLines, VerticalGridLines, XAxis, YAxis
+    FlexibleWidthXYPlot, LineMarkSeries,
+    HorizontalGridLines, VerticalGridLines, XAxis, YAxis
 } from 'react-vis';
 
 import _ from 'lodash';
@@ -10,6 +11,7 @@ import _ from 'lodash';
 import PatternsStore from './PatternsStore';
 import StockPatternApi from '../../../api/StockPatternApi';
 import * as utils from '../Simulation/Stores/utils';
+import SampleCardGraphContainer from '../Simulation/Subviews/SampleCardGraphContainer';
 
 @observer
 export default class PatternsView extends React.Component {
@@ -33,12 +35,16 @@ export default class PatternsView extends React.Component {
     pruneAll = () => {
         const { sampledPatterns } = PatternsStore;
 
+        var promises = [];
+
         sampledPatterns.forEach(data => {
-            StockPatternApi.delete(data._id.$oid);
+            promises.push(StockPatternApi.delete(data._id.$oid));
         });
 
-        console.log(`Pruned all of ${sampledPatterns.length}`);
-        PatternsStore.setup();
+        Promise.all(promises).then(_ => {
+            console.log(`Pruned all of ${sampledPatterns.length}`);
+            PatternsStore.createPatterns();
+        });
     }
 
     pruneAllCriterias = () => {
@@ -46,6 +52,20 @@ export default class PatternsView extends React.Component {
         this.pruneWorstValues();
     }
 
+
+    differenceArrays = (valuesOne, valuesTwo) => {
+        if (valuesOne.length !== valuesTwo.length) {
+            return 999999;
+        }
+
+        var difference = 0;
+
+        for (var i = 0; i < valuesOne.length; i++) {
+            difference += Math.abs(valuesOne[i] - valuesTwo[i]);
+        }
+
+        return difference;
+    }
 
     pruneSameValues = () => {
         const { sampledPatterns } = PatternsStore;
@@ -57,21 +77,25 @@ export default class PatternsView extends React.Component {
                 const a = sampledPatterns[i];
                 const b = sampledPatterns[j];
 
-                const difference = Math.abs(_.sum(a.values) - _.sum(b.values));
+                const difference = this.differenceArrays(a.values, b.values);
 
-                if (a.name === b.name && difference <= 1 && a.values.length === b.values.length) {
+                if (a.name === b.name && a.values.length === b.values.length && difference <= 1) {
                     prunableId.push(a._id.$oid);
                     break;
                 }
             }
         }
-        console.log(`Pruned ${prunableId.length} from ${sampledPatterns.length}`);
+
+        var promises = [];
 
         prunableId.forEach(id => {
-            StockPatternApi.delete(id);
+            promises.push(StockPatternApi.delete(id));
         });
 
-        PatternsStore.setup();
+        Promise.all(promises).then(_ => {
+            console.log(`Pruned ${prunableId.length} from ${sampledPatterns.length}`);
+            PatternsStore.setup();
+        });
     }
 
     pruneWorstValues = () => {
@@ -113,38 +137,18 @@ export default class PatternsView extends React.Component {
         return (
             <div>
 
+                {/* Defined stock patterns */}
                 <Segment>
                     <Header as='h1' content='Defined Stock Patterns' />
-
 
                     <Card.Group itemsPerRow={8}>
                         {definedPatterns.map((pattern, index) => {
                             return (
-                                <Card key={index}>
 
-                                    <Card.Content>
-                                        <Card.Header>{pattern.name}</Card.Header>
-                                    </Card.Content>
-
-                                    <Card.Content>
-                                        <Card.Meta>{`Cost: ${pattern.cost}`}</Card.Meta>
-                                    </Card.Content>
-
-                                    <Card.Content>
-                                        <FlexibleWidthXYPlot height={200}>
-                                            <VerticalGridLines />
-                                            <HorizontalGridLines />
-                                            <XAxis />
-                                            <YAxis />
-                                            <LineMarkSeries
-                                                data={utils.createGraphDataFromArrayOfValues(pattern.values)}
-                                                lineStyle={{ stroke: 'red' }}
-                                                markStyle={{ stroke: 'blue' }}
-                                            />
-                                        </FlexibleWidthXYPlot>
-                                    </Card.Content>
-                                </Card>
-
+                                <SampleCardGraphContainer
+                                    key={index} title={pattern.name}
+                                    data={utils.createCoordinateData(pattern.values)}
+                                />
                             );
                         })}
                     </Card.Group>
@@ -212,7 +216,7 @@ export default class PatternsView extends React.Component {
                                             <XAxis />
                                             <YAxis />
                                             <LineMarkSeries
-                                                data={utils.createGraphDataFromArrayOfValues(pattern.values)}
+                                                data={utils.createCoordinateData(pattern.values)}
                                                 lineStyle={{ stroke: 'red' }}
                                                 markStyle={{ stroke: 'blue' }}
                                             />

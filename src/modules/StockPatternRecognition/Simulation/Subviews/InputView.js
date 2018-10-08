@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Header, Grid, Form, Segment, Image } from 'semantic-ui-react';
+import { Header, Grid, Form, Segment, Divider } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
 
@@ -15,8 +15,9 @@ import SamplingStore from '../Stores/SamplingStore';
 @observer
 export default class InputView extends React.Component {
 
-    componentDidMount() {
+    componentWillMount() {
         InputStore.setDefaultValues();
+
         this.onSubmitInputs(); // TODO: REMOVE ON PRODUCTION
     }
 
@@ -28,38 +29,34 @@ export default class InputView extends React.Component {
 
     onSubmitInputs = () => {
 
-        // Get stock data based on inputs
         const { input } = InputStore;
+        SamplingStore.symbol = input.symbol;
 
         TimeSeriesApi.get(input.symbol, input.outputSize)
             .then(res => {
+
                 console.log(res.data);
 
-                // Get the key for time series price data array from response
-                const timeSeriesPriceKey = utils.getTimeSeriesPriceKeyFromResponse(Object.keys(res.data));
+                const timeSeriesPriceKey = utils.getTimeSeriesKey(Object.keys(res.data));   // Check and get key
+                const rawTimeSeriesData = res.data[timeSeriesPriceKey];     // Raw Time Series (Daily) Data
+                const dateKeys = Object.keys(rawTimeSeriesData);            // Date keys -> '2018-12-28'
 
-                // Get time series price data and date keysfrom response
-                const rawTimeSeriesData = res.data[timeSeriesPriceKey];
-                const dateKeys = Object.keys(rawTimeSeriesData);
-
-                // Store stock price data tuple
                 var data = [];
+
+                // Store stock price date tuple                
                 dateKeys.forEach(dateKey => {
 
-                    const price = parseFloat(parseFloat(rawTimeSeriesData[dateKey]['4. close']).toFixed(2));
+                    // remove bad data
+                    const price = parseFloat(rawTimeSeriesData[dateKey]['4. close']);
+
                     if (price === 0) { return; }
 
-                    data.push({
-                        date: new Date(dateKey),
-                        price: price
-                    })
+                    data.push({ date: new Date(dateKey), price: price });
                 });
 
-
                 // Store sorted oldest to latest price data
-                TimeSeriesStore.data = utils.sortTimeSeriesDataByPrice(data);
+                TimeSeriesStore.data = utils.sortObjectsByDate(data);
                 TimeSeriesStore.updateAttributes();
-                SamplingStore.symbol = input.symbol;
             })
             .catch(err => { console.log(err) });
     }
@@ -71,13 +68,16 @@ export default class InputView extends React.Component {
         return (
 
             <Segment className='bg-light'>
-                <Header as='h2' content='Inputs' />
+                <Header as='h2' content='Time Series API Input' />
+                <Divider />
+
                 <Grid>
 
                     {/* Form Inputs */}
                     <Grid.Column>
                         <Form>
                             <Form.Group widths='equal'>
+
                                 <Form.Dropdown
                                     label='Symbol' name='symbol' fluid selection
                                     value={input.symbol} options={Options.symbol}
@@ -89,18 +89,9 @@ export default class InputView extends React.Component {
                                     onChange={this.handleInputSelectionChange}
                                 />
 
-                                <Form.Button
-                                    color='orange' fluid content='Default Inputs'
-                                    onClick={this.onDefaultInputs}
-                                />
-                                <Form.Button
-                                    negative fluid content='Clear Inputs'
-                                    onClick={this.onClearInputs}
-                                />
-                                <Form.Button
-                                    positive fluid content='Submit Inputs'
-                                    onClick={this.onSubmitInputs}
-                                />
+                                <Form.Button positive fluid content='Submit' onClick={this.onSubmitInputs} />
+                                <Form.Button color='orange' fluid content='Default' onClick={this.onDefaultInputs} />
+                                <Form.Button negative fluid content='Clear' onClick={this.onClearInputs} />
                             </Form.Group>
                         </Form>
                     </Grid.Column>
