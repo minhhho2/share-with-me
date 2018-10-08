@@ -10,14 +10,12 @@ import Options from '../../constants/Options';
 class InputStore {
 
     @observable input = {
-        period: '',
         symbol: '',
         outputSize: ''
     }
     
     @action
     setDefaultValues = () => {
-        this.input.period = 14;
         this.input.symbol = Options.symbol[4].value;
         this.input.outputSize = Options.outputSize[0].value;
     }
@@ -25,7 +23,6 @@ class InputStore {
     @action
     clearDefaultValues = () => {
         this.input = _.mapValues(this.input, () => '');
-        this.input.period = 14;
     }
 
     @action

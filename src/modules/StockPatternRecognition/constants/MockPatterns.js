@@ -10,11 +10,6 @@ const MOCK_PATTERNS = {
             cost: 0,
             values: [0, 3, 6, 9, 6, 3, 0, 3, 6, 9, 6, 3, 0]
         },
-        {
-            name: 'Double Botton',
-            cost: 0,
-            values: [10, 5, 0, 5, 10, 5, 0, 5, 10]
-        }
     ],
     sampled: [
         {

@@ -63,7 +63,6 @@ class PatternsStore {
             const patternName = pattern.name;
 
             var matches = this.sampledPatterns.filter(sample => {
-                console.log(sample.name + ' vs. ' + patternName);
                 return sample.name === patternName && sample.cost != 0;
             })
             this.patternCounts.push({

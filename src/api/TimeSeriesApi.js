@@ -9,9 +9,9 @@ const APIKEY = config.alphaVantageApiKey;
 
 class TimeSeriesApi {
 
-    get = (period, symbol, outputSize) => {
+    get = (symbol, outputSize) => {
 
-        period = 'TIME_SERIES_DAILY'; // TODO: THIS IS HOT FIX - REMOVE PERIOD
+        const period = 'TIME_SERIES_DAILY'; 
 
         // Check arguments
         this.checkArguments(period, symbol, outputSize);

@@ -5,16 +5,23 @@ import DTW from 'dtw';
 import _ from 'lodash';
 
 import * as utils from '../Stores/utils';
+import * as processing from '../Stores/processing';
+
+
 import StockPatternApi from '../../../../api/StockPatternApi';
 import TimeSeriesStore from './TimeSeriesStore';
 import InputStore from './InputStore';
 
+import algoParameters from './AlgoConfig';
+
+
+import { StockPattern } from '../../../../models/StockPattern';
 
 class SamplingStore {
 
     @observable windowPos = null;
     @observable intervalId = null;
-    @observable period = null;
+    @observable period = 14;
     @observable symbol = null;
 
     @observable currentSampleValues = [0, 1, 2, 3, 4, 5, 6, 7, 7];
@@ -25,6 +32,7 @@ class SamplingStore {
 
     @action
     setup = () => {
+        this.period = 30;
 
         // Get Sampled Patterns
         StockPatternApi.readAll()
@@ -48,29 +56,26 @@ class SamplingStore {
 
     classifySample = (index, sampleValues) => {
 
-        var dtw = new DTW({ distanceMetric: 'squaredEuclidean' });
-        const THRESSHOLD = 25;
-
-        var samplePatternValues = sampleValues;
+        const { symbol } = InputStore.input;
 
         var multipleMatches = [];
 
+        // Calculate distance between each neighbor
         this.patterns.forEach(pattern => {
-            // normalize -> scale
-            var normalizedSampleValues = utils.normalize(samplePatternValues, pattern.values);
-            var cost = dtw.compute(normalizedSampleValues, pattern.values);
 
-            if (cost <= THRESSHOLD) {
-                console.log("Matched sample with " + pattern.name + ' @ ' + cost);
+            var distance = processing.distance(sampleValues, pattern.values);
 
-                multipleMatches.push({
-                    name: pattern.name,
-                    cost: cost,
-                    values: normalizedSampleValues,
-                    date: TimeSeriesStore.data[index].date,
-                    period: this.period,
-                    symbol: this.symbol
-                });
+            var normalizedSampleValues = utils.normalize(sampleValues, pattern.values);
+
+            if (distance <= algoParameters.distanceThreshold) {
+                console.log("Matched sample with " + pattern.name + ' @ ' + distance);
+
+                const newStockPattern = StockPattern(
+                    pattern.name, distance, normalizedSampleValues,
+                    TimeSeriesStore.data[index].date, this.period, symbol
+                );
+
+                multipleMatches.push(newStockPattern);
             }
         });
 
@@ -79,18 +84,17 @@ class SamplingStore {
         });
 
         if (multipleMatches.length >= 1) {
+            console.log(`1st and lower cost: ${multipleMatches[0].cost} and last and highest cost ${multipleMatches[multipleMatches.length - 1].cost}`);
+
             const chosenMatch = multipleMatches[0];
             this.matches.push(chosenMatch);
         }
 
         // Get last match if it exists
         // compare if below 3 days apart
-
-
-
-
         // get smallest match
     }
+
 }
 
 export default new SamplingStore();

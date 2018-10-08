@@ -20,6 +20,8 @@ export default class SamplingView extends React.Component {
         SamplingStore.setup();
     }
 
+    onPeriodChange = (e, data) => { SamplingStore.period = parseInt(data.value); }
+
     onSaveMatchedSamples = () => {
         const { matches } = SamplingStore;
         if (matches.length <= 0) {
@@ -35,6 +37,7 @@ export default class SamplingView extends React.Component {
     }
 
     onStartSampling = () => {
+        console.log(SamplingStore.period);
         this.matches = [];
         SamplingStore.clear();
         SamplingStore.windowPos = 0;
@@ -93,6 +96,13 @@ export default class SamplingView extends React.Component {
                         <Form.Input label='dates' value={`${attributes.startDate} to ${attributes.endDate}`} />
                         <Form.Input label='prices' value={`${attributes.startPrice} to ${attributes.endPrice}`} />
                         <Form.Input label='samples' value={`${attributes.numberDataPoints}`} />
+
+                        <Form.Input
+                            type='number' label='Period' name='period' fluid
+                            value={period}
+                            onChange={this.onPeriodChange}
+                        />
+
                         <Form.Button fluid positive type='button' onClick={this.onStartSampling} content='Start Sampling' />
                         <Form.Button fluid negative type='button' onClick={SamplingStore.clear} content='Stop Sampling' />
                         <Form.Button fluid type='button' onClick={this.onSaveMatchedSamples} content='Save Samples' />

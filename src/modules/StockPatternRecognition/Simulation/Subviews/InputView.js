@@ -30,9 +30,8 @@ export default class InputView extends React.Component {
 
         // Get stock data based on inputs
         const { input } = InputStore;
-        SamplingStore.period = parseInt(input.period);
 
-        TimeSeriesApi.get(input.period, input.symbol, input.outputSize)
+        TimeSeriesApi.get(input.symbol, input.outputSize)
             .then(res => {
                 console.log(res.data);
 
@@ -79,11 +78,6 @@ export default class InputView extends React.Component {
                     <Grid.Column>
                         <Form>
                             <Form.Group widths='equal'>
-                                <Form.Input
-                                    type='number' label='Period' name='period' fluid
-                                    value={input.period}
-                                    onChange={this.handleInputSelectionChange}
-                                />
                                 <Form.Dropdown
                                     label='Symbol' name='symbol' fluid selection
                                     value={input.symbol} options={Options.symbol}

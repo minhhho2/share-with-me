@@ -40,7 +40,7 @@ export default class AppRouter extends React.Component {
                                 onClick={AppRouterStore.handleTabClick}
                                 as={Link} to='/'
                             />
-
+                            {/* 
                             <Menu.Item
                                 name='sector' active={activeTab === 'sector'}
                                 onClick={AppRouterStore.handleTabClick}
@@ -52,6 +52,7 @@ export default class AppRouter extends React.Component {
                                 onClick={AppRouterStore.handleTabClick}
                                 as={Link} to='/blog'
                             />
+                            */}
 
                             <Menu.Item
                                 name='pattern' active={activeTab === 'pattern'}
@@ -70,10 +71,11 @@ export default class AppRouter extends React.Component {
                         <br />
                         <Switch>
                             <Route exact path='/' component={Home} />
+                            {/* 
                             <Route exact path='/sector' component={SectorView} />
                             <Route exact path='/blog' component={BlogView} />
                             <Route exact path="/blog/:id" component={PostView} />
-
+                            */}
                             <Route exact path="/pattern" component={PatternRecognitionView} />
 
                             <Route component={Error} />

@@ -166,7 +166,7 @@ export default class PatternsView extends React.Component {
                 {/* Statistics */}
                 <Segment>
                     <Header as='h1' content='Dataset Statistics' />
-                    <Grid>
+                    <Grid columns='equal'>
                         <Grid.Column>
                             {patternCounts.map(pattern => {
                                 return (<p key={pattern.name}>{`${pattern.name} with ${pattern.count}`}</p>);
