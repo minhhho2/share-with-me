@@ -28,6 +28,6 @@ $ npm install
 
 ## Figures
 
-![one] (https://github.com/minhhho2/share-with-me/blob/master/assets/dataset.png)
-![two] (https://github.com/minhhho2/share-with-me/blob/master/assets/sampling.png)
-![three] (https://github.com/minhhho2/share-with-me/blob/master/assets/sector.png)
+![one](https://github.com/minhhho2/share-with-me/blob/master/assets/dataset.png)
+![two](https://github.com/minhhho2/share-with-me/blob/master/assets/sampling.png)
+![three](https://github.com/minhhho2/share-with-me/blob/master/assets/sector.png)
