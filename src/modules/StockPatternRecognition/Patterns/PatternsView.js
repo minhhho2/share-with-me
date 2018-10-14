@@ -99,15 +99,12 @@ export default class PatternsView extends React.Component {
                 <Segment>
                     <Header as='h1' content='Defined Stock Patterns' />
 
-                    <Card.Group itemsPerRow={8}>
+                    <Card.Group itemsPerRow={6}>
                         {definedPatterns.map((pattern, index) => {
-                            return (
-
-                                <SampleCardGraphContainer
-                                    key={index} title={pattern.name}
-                                    data={utils.createCoordinateData(pattern.values)}
-                                />
-                            );
+                            return (<SampleCardGraphContainer
+                                key={index} title={pattern.name}
+                                data={utils.createCoordinateData(pattern.values)}
+                            />);
                         })}
                     </Card.Group>
                 </Segment>
@@ -148,7 +145,7 @@ export default class PatternsView extends React.Component {
                 <Segment>
                     <Header as='h1' content='Sampled Match Stock Patterns' />
 
-                    <Card.Group itemsPerRow={8}>
+                    <Card.Group itemsPerRow={6}>
 
                         {sampledPatterns.map((pattern) => {
                             return (

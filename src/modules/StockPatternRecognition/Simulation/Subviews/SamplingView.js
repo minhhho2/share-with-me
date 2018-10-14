@@ -1,11 +1,9 @@
 import * as React from 'react';
-import { Card, Header, Grid, Divider, Form, Segment, Label } from 'semantic-ui-react'
+import { Card, Header, Grid, Form, Segment } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
 import { FlexibleWidthXYPlot, LineMarkSeries, XAxis, YAxis } from 'react-vis';
 
-import everpolate from 'everpolate';
-
-
+import _ from 'lodash';
 
 import MockPatterns from '../../constants/MockPatterns';
 import * as utils from '../Stores/utils';
@@ -13,10 +11,13 @@ import * as utils from '../Stores/utils';
 // Stores
 import SamplingStore from '../Stores/SamplingStore';
 import TimeSeriesStore from '../Stores/TimeSeriesStore';
+import InputStore from '../Stores/InputStore';
 
 import StockPatternApi from '../../../../api/StockPatternApi';
 import SlidingWindowContainer from './SlidingWindowContainer';
 import SampleCardGraphContainer from './SampleCardGraphContainer';
+
+import { StockPattern } from '../../../../models/StockPattern';
 
 @observer
 export default class SamplingView extends React.Component {
@@ -25,7 +26,8 @@ export default class SamplingView extends React.Component {
 
     onPeriodChange = (e, data) => {
         SamplingStore.period = parseInt(data.value);
-        SamplingStore.currentSampleValues = Array.apply(null, { length: SamplingStore.period }).map(Function.call, Number);
+        SamplingStore.minDaysApart = parseInt(SamplingStore.peirod / 10.0 * 3.0);
+        SamplingStore.currentSampleValues = _.range(SamplingStore.period);
     }
 
     onSaveMatchedSamples = () => {        // Add new labeled patterns to database
@@ -48,20 +50,20 @@ export default class SamplingView extends React.Component {
     timer = () => {
         const { windowPos, period } = SamplingStore
         const { data } = TimeSeriesStore;
+        const { input } = InputStore;
 
         // get the N object of date and prices
-        const datas = data.slice(windowPos, windowPos + period);
-        const prices = datas.map(data => { return data.price; });
-
+        const prices = data.slice(windowPos, windowPos + period).map(elem => { return elem.price; });
 
         SamplingStore.setCurrentSampleValues(prices);   // set values for graph
 
 
-        const sample = {
-            index: windowPos,
-            values: prices
-        }
-
+        const sample = StockPattern(
+            undefined, undefined, prices,
+            TimeSeriesStore.data[windowPos].date,
+            period, input.symbol
+        );
+        
         SamplingStore.classifySample(sample);           // compare and classift
         SamplingStore.windowPos = windowPos + 1;        // increment samples
 
@@ -75,9 +77,6 @@ export default class SamplingView extends React.Component {
 
         const { currentSampleValues, windowPos, period, matches } = SamplingStore;
         const { data } = TimeSeriesStore;
-
-        // Configure sliding window properties
-
 
         var windowData = [];
         for (var i = windowPos; i < windowPos + period; i++) {

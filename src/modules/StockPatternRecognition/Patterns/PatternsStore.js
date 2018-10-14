@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import StockPatternApi from '../../../api/StockPatternApi';
 import * as utils from '../Simulation/Stores/utils';
-
+import * as Resampling from '../Helper/Resampling';
 
 class PatternsStore {
 
@@ -18,9 +18,9 @@ class PatternsStore {
     @observable periodCounts = [];
 
     /* For adjusting sampling types */
-    @observable maxOffset = 12;
-    @observable incrementOffset = 4;
-
+    @observable maxOffset = 6;
+    @observable incrementOffset = 2;
+    
     @action
     setup = () => {
         // Get defined patterns from static file
@@ -45,9 +45,7 @@ class PatternsStore {
     }
 
 
-    /* 
-        Creates similar patterns for a given pattern.
-    */
+    /* Creates similar patterns for a given pattern. */
     createPatterns = () => {
         var promises = [];
 
@@ -71,7 +69,8 @@ class PatternsStore {
                 return value + (dupPattern.values.length - 1 - index) * offset;
             });
 
-            dupPattern.values = utils.normalize(dupPattern.values);
+            dupPattern.values = Resampling.resample(dupPattern.values);
+//            dupPattern.values = utils.normalize(dupPattern.values);
             dupPattern.name = `${pattern.name} slanted down @ ${offset}`;
 
             var promise = StockPatternApi.create(dupPattern);
@@ -94,7 +93,9 @@ class PatternsStore {
                 return value + index * offset;
             });
 
-            dupPattern.values = utils.normalize(dupPattern.values);
+            dupPattern.values = Resampling.resample(dupPattern.values);
+
+            //dupPattern.values = utils.normalize(dupPattern.values);
             dupPattern.name = `${pattern.name} slanted up @ ${offset}`;
 
             var promise = StockPatternApi.create(dupPattern);
@@ -115,7 +116,8 @@ class PatternsStore {
                 return value + Math.random() * 30;
             });
 
-            dupPattern.values = utils.normalize(dupPattern.values);
+            dupPattern.values = Resampling.resample(dupPattern.values);
+//            dupPattern.values = utils.normalize(dupPattern.values);
 
             var promise = StockPatternApi.create(dupPattern);
             promise.then(res => console.log(res)).catch(err => console.log(err));

@@ -7,7 +7,7 @@ import PatternRecognitionStore from './PatternRecognitionStore';
 
 import PatternsView from './Patterns/PatternsView';
 import SimulationView from './Simulation/SimulationView';
-import ResamplingView from './Resampling/Resampling';
+import ResamplingView from './Resampling/ResamplingView';
 
 @observer
 export default class PatternRecognitionView extends React.Component {

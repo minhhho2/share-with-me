@@ -1,7 +1,5 @@
 const PARAMETERS = {
-    distanceThreshold: 7,
     maxNeighbours: 10,
-    dtwDistanceMetric: { distanceMetric: 'euclidean' }, //'manhattan' | 'euclidean' | 'squaredEuclidean'.
     minDaysApart: 4
 }
 

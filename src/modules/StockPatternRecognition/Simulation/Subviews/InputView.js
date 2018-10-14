@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import _ from 'lodash';
 
 import TimeSeriesApi from '../../../../api/TimeSeriesApi';
-import Options from '../../constants/Options';
+import Options from '../../constants/ApiOptions';
 import * as utils from '../Stores/utils';
 
 // Stores

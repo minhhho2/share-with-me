@@ -2,7 +2,7 @@
 
 import { observable, action } from 'mobx';
 import _ from 'lodash';
-import Options from '../../constants/Options';
+import Options from '../../constants/ApiOptions';
 
 class InputStore {
 
@@ -10,7 +10,7 @@ class InputStore {
         symbol: '',
         outputSize: ''
     }
-    
+        
     @action
     setDefaultValues = () => {
         this.input.symbol = Options.symbol[4].value;
