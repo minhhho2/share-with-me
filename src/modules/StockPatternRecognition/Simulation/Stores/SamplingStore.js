@@ -65,7 +65,8 @@ class SamplingStore {
 
         var neighbors = [];
         this.patterns.forEach(pattern => {
-            console.log(`comparing @ ${sample.index} against ${pattern.name}`)
+            console.log(sample.values);
+            //console.log(`comparing @ ${sample.index} against ${pattern.name}`)
             
             var distance = processing.distance(sample.values, pattern.values);
             var normalizedSample = utils.normalize(sample.values);

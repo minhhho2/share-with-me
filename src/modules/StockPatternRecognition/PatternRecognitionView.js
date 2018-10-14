@@ -7,6 +7,7 @@ import PatternRecognitionStore from './PatternRecognitionStore';
 
 import PatternsView from './Patterns/PatternsView';
 import SimulationView from './Simulation/SimulationView';
+import ResamplingView from './Resampling/Resampling';
 
 @observer
 export default class PatternRecognitionView extends React.Component {
@@ -21,6 +22,8 @@ export default class PatternRecognitionView extends React.Component {
                 return <PatternsView />
             case 'simulation':
                 return <SimulationView />
+            case 'resampling':
+                return <ResamplingView />
             default:
                 alert("incorrect view selected in pattern recognition");
                 break;

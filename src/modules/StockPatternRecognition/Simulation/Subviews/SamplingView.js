@@ -3,6 +3,9 @@ import { Card, Header, Grid, Divider, Form, Segment, Label } from 'semantic-ui-r
 import { observer } from 'mobx-react';
 import { FlexibleWidthXYPlot, LineMarkSeries, XAxis, YAxis } from 'react-vis';
 
+import everpolate from 'everpolate';
+
+
 
 import MockPatterns from '../../constants/MockPatterns';
 import * as utils from '../Stores/utils';
@@ -20,9 +23,9 @@ export default class SamplingView extends React.Component {
 
     componentWillMount() { SamplingStore.setup(); }
 
-    onPeriodChange = (e, data) => { 
-        SamplingStore.period = parseInt(data.value); 
-        SamplingStore.currentSampleValues = Array.apply(null, {length: SamplingStore.period }).map(Function.call, Number);
+    onPeriodChange = (e, data) => {
+        SamplingStore.period = parseInt(data.value);
+        SamplingStore.currentSampleValues = Array.apply(null, { length: SamplingStore.period }).map(Function.call, Number);
     }
 
     onSaveMatchedSamples = () => {        // Add new labeled patterns to database

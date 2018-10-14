@@ -13,7 +13,7 @@ export function distance(timeSeriesSample, timeSeriesLabeled) {
     var distance = dtw.compute(utils.normalize(timeSeriesSample), utils.normalize(timeSeriesLabeled));
     
     var maxLength = timeSeriesLabeled.length > timeSeriesSample.length ? timeSeriesLabeled.length: timeSeriesSample.length
-    console.log('distance before and after ' + distance + ' ; ' + distance/maxLength);
+    //console.log('distance before and after ' + distance + ' ; ' + distance/maxLength);
 
     distance = distance/maxLength
 
