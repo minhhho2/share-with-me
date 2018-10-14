@@ -15,9 +15,6 @@ export default class SimulationView extends React.Component {
         return (
             <div className='p-3'>
 
-                <Header className='text-center' as='h1' content='Pattern Processing View' />
-                <Divider className='m-5' />
-
                 {/* Input Selection */}
                 <InputView />
 

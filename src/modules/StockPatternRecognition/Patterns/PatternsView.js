@@ -6,8 +6,6 @@ import {
     HorizontalGridLines, VerticalGridLines, XAxis, YAxis
 } from 'react-vis';
 
-import _ from 'lodash';
-
 import PatternsStore from './PatternsStore';
 import StockPatternApi from '../../../api/StockPatternApi';
 import * as utils from '../Simulation/Stores/utils';
@@ -38,21 +36,21 @@ export default class PatternsView extends React.Component {
 
         var promises = [];
 
-        // Delete all patterns
+        // Delete all existing patterns
         sampledPatterns.forEach(data => {
             promises.push(StockPatternApi.delete(data._id.$oid));
         });
 
-        // Create new patterns after deleting everything
+        // Wait until all delete finishes 
         Promise.all(promises).then(() => {
             console.log(`Pruned all of ${sampledPatterns.length}`);
-            PatternsStore.createPatterns();
-        });
-    }
 
-    pruneAllCriterias = () => {
-        this.pruneSameValues();
-        this.pruneWorstValues();
+            // Create new patterns
+            var nextPromises = PatternsStore.createPatterns();
+            Promise.all(nextPromises).then(() => {
+                PatternsStore.setup();
+            });
+        });
     }
 
     pruneSameValues = () => {
@@ -86,36 +84,8 @@ export default class PatternsView extends React.Component {
         });
     }
 
-    pruneWorstValues = () => {
-
-        var newData = PatternsStore.sampledPatterns.slice();
-
-        newData.sort((a, b) => {
-            return b.cost - a.cost;
-        });
-
-        const numPrune = parseInt(newData.length * 0.20);
-
-        if ((newData.length - numPrune) >= 4) {
-
-            // get the worst cost ones
-            var worstCost = newData.slice(0, numPrune);
-
-            console.log(`Pruned ${numPrune} from ${newData.length}`);
-
-            worstCost.forEach(data => {
-                StockPatternApi.delete(data._id.$oid);
-            });
-        }
-        PatternsStore.setup();
-
-    }
-
-    pruneSimilarDates = () => {
-        // Prune patterns that have similar dates, same name and values
-    }
     refresh = () => {
-        PatternsStore.computeStats();
+        PatternsStore.setup();
     }
 
     render() {
@@ -147,9 +117,7 @@ export default class PatternsView extends React.Component {
                     <Form>
                         <Form.Group>
                             <Form.Button fluid onClick={this.pruneAll} content='Prune All' />
-                            <Form.Button fluid onClick={this.pruneAllCriterias} content='Prune All Criterias' />
                             <Form.Button fluid onClick={this.pruneSameValues} content='Prune Same Values' />
-                            <Form.Button fluid onClick={this.pruneWorstValues} content='Prune Worst Values' />
                             <Form.Button fluid onClick={this.refresh} content='Refresh' />
                         </Form.Group>
                     </Form>

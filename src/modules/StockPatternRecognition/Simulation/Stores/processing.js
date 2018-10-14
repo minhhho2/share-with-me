@@ -1,24 +1,53 @@
 
 import DTW from 'dtw';
 import * as utils from './utils';
-
+import AlgoConfig from './AlgoConfig';
 
 /* 
     Calculates distance between two time series data. 
     Data is in the form of array of numbers.
 */
-
 export function distance(timeSeriesSample, timeSeriesLabeled) {
+
+    var dtw = new DTW(AlgoConfig.dtwDistanceMetric);
+    var distance = dtw.compute(utils.normalize(timeSeriesSample), utils.normalize(timeSeriesLabeled));
     
-    var dtw = new DTW({ distanceMetric: 'squaredEuclidean' });
+    var maxLength = timeSeriesLabeled.length > timeSeriesSample.length ? timeSeriesLabeled.length: timeSeriesSample.length
+    console.log('distance before and after ' + distance + ' ; ' + distance/maxLength);
 
-    var newSample = utils.normalize(timeSeriesSample);
-    var newLabeled = utils.normalize(timeSeriesLabeled);
+    distance = distance/maxLength
 
-    return dtw.compute(newSample, newLabeled);
+    return distance;
+}
+
+export function pruneClassOutliers() {
+
+}
+export function majorityVote(neighbors) {
+
+}
+
+export function confusionMatrix() {
+
 }
 
 
+// https://www.analyticsvidhya.com/blog/2018/03/introduction-k-neighbours-algorithm-clustering/
+export function classify() {
+
+    /*
+
+    load dataset
+    initialize value of k
+    iterate 1 ... total training data points
+        calcualte distance between sample andtraining data using a distance metric
+    Sort asceding order based on distance
+    get top k values from sorted array
+    get most frequent class from this array
+    return predicted class
+
+*/
+}
 
 /*
 
@@ -43,4 +72,3 @@ weightedCost = (objA) => {
  */
 
 
- 

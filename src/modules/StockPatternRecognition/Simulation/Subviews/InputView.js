@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Header, Grid, Form, Segment, Divider } from 'semantic-ui-react';
+import { Grid, Form, Segment, Label } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
 
@@ -68,30 +68,30 @@ export default class InputView extends React.Component {
         return (
 
             <Segment className='bg-light'>
-                <Header as='h2' content='Time Series API Input' />
-                <Divider />
 
                 <Grid>
 
                     {/* Form Inputs */}
                     <Grid.Column>
                         <Form>
-                            <Form.Group widths='equal'>
+                            
+                            <Form.Group>
 
-                                <Form.Dropdown
-                                    label='Symbol' name='symbol' fluid selection
+                                <Form.Dropdown width={5}
+                                    name='symbol' fluid selection placeholder='select your symbol'
                                     value={input.symbol} options={Options.symbol}
                                     onChange={this.handleInputSelectionChange}
                                 />
-                                <Form.Dropdown
-                                    label='Output Size' name='outputSize' fluid selection
+
+                                <Form.Dropdown width={5}
+                                    name='outputSize' fluid selection placeholder='select your output size'
                                     value={input.outputSize} options={Options.outputSize}
                                     onChange={this.handleInputSelectionChange}
                                 />
 
-                                <Form.Button positive fluid content='Submit' onClick={this.onSubmitInputs} />
-                                <Form.Button color='orange' fluid content='Default' onClick={this.onDefaultInputs} />
-                                <Form.Button negative fluid content='Clear' onClick={this.onClearInputs} />
+                                <Form.Button width={2} positive fluid content='Submit' onClick={this.onSubmitInputs} />
+                                <Form.Button width={2}  color='orange' fluid content='Default' onClick={this.onDefaultInputs} />
+                                <Form.Button width={2}  negative fluid content='Clear' onClick={this.onClearInputs} />
                             </Form.Group>
                         </Form>
                     </Grid.Column>

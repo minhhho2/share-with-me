@@ -19,9 +19,8 @@ class StockPatternApi {
         "https://api.mlab.com/api/1/databases/my-db/collections/my-coll?apiKey=myAPIKey"
     */
     create = (data) => {
-
+        console.log("Creating new pattern");
         const newPattern = StockPattern(data.name, data.cost, data.values, data.date, data.period);
-
         return axios.post(`${BASE_URL}?apiKey=${API_KEY}`, newPattern);
     }
 
@@ -30,7 +29,10 @@ class StockPatternApi {
         GET /databases/{database}/collections/{collection}/{_id}
         https://api.mlab.com/api/1/databases/my-db/collections/my-coll/4e7315a65e4ce91f885b7dde?apiKey=myAPIKey 
     */
-    read = (id) => { return axios.get(`${BASE_URL}/${id}?apiKey=${API_KEY}`); }
+    read = (id) => {
+        console.log("Getting one pattern");
+        return axios.get(`${BASE_URL}/${id}?apiKey=${API_KEY}`);
+    }
 
     /*
         Update stock pattern
@@ -46,7 +48,10 @@ class StockPatternApi {
         https://api.mlab.com/api/1/databases/my-db/collections/my-coll/4e7315a65e4ce91f885b7dde?apiKey=myAPIKey
     */
 
-    delete = (id) => { return axios.delete(`${BASE_URL}/${id}?apiKey=${API_KEY}`); }
+    delete = (id) => {
+        console.log("Deleting one pattern");
+        return axios.delete(`${BASE_URL}/${id}?apiKey=${API_KEY}`);
+    }
 
     /*
         GET /databases/{database}/collections/{collection}
@@ -54,7 +59,10 @@ class StockPatternApi {
         https://api.mlab.com/api/1/databases/my-db/collections/my-coll?apiKey=myAPIKey
     
     */
-    readAll = () => { return axios.get(`${BASE_URL}?apiKey=${API_KEY}`); }
+    readAll = () => {
+        console.log("Reading all patterns");
+        return axios.get(`${BASE_URL}?apiKey=${API_KEY}`);
+    }
 
 }
 export default new StockPatternApi();

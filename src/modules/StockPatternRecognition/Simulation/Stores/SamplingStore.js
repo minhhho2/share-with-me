@@ -23,7 +23,7 @@ class SamplingStore {
     @observable period = null;
     @observable symbol = null;
 
-    @observable currentSampleValues = [0, 1, 2, 3, 4, 5, 6, 7, 7];
+    @observable currentSampleValues = null;
 
     @observable matches = [];   // sampled matches from current data ~ NOT from DB/Dataset
     @observable patterns = [];  // previous matches from DB/Dataset
@@ -34,15 +34,12 @@ class SamplingStore {
         this.matches = [];
         this.period = 16;
         this.windowPos = 0;
+        this.currentSampleValues = Array.apply(null, {length: this.period }).map(Function.call, Number);
 
         // Get Sampled Patterns
         StockPatternApi.readAll()
             .then(res => { this.patterns = res.data.slice(); })
             .catch(err => { console.log(err) });
-
-        if (this.patterns.length <= 0) {
-            console.log("Cant compare if theres no patterns to compare to");
-        }
     }
 
     @action
@@ -60,27 +57,28 @@ class SamplingStore {
     /*  
         kNN with threshold
         Incremental batch learning with very low threshold
+        https://www.analyticsvidhya.com/blog/2018/03/introduction-k-neighbours-algorithm-clustering/
 
     */
+
     classifySample = (sample) => {
 
-        const { symbol } = InputStore.input;
-        const { data } = TimeSeriesStore;
-
         var neighbors = [];
-
-        // Calculate distance for all neighbors
         this.patterns.forEach(pattern => {
+            console.log(`comparing @ ${sample.index} against ${pattern.name}`)
+            
             var distance = processing.distance(sample.values, pattern.values);
             var normalizedSample = utils.normalize(sample.values);
-
+            
 
             const newStockPattern = StockPattern(pattern.name, distance,
-                normalizedSample, data[sample.index].date, this.period, symbol);
+                normalizedSample, TimeSeriesStore.data[sample.index].date,
+                this.period, InputStore.input.symbol);
 
             neighbors.push(newStockPattern);
         });
 
+        // Get top k neighbours
         neighbors.sort((a, b) => {
             return a.cost - b.cost;
         });
@@ -89,25 +87,23 @@ class SamplingStore {
         if (neighbors.length >= 1) {
 
             var lowestMatch = neighbors[0];
+            //console.log('lowest cost ' + neighbors[0].cost);
 
             // check if below threshold
             if (lowestMatch.cost <= algoParameters.distanceThreshold) {
-                console.log(`1st and lower cost: ${neighbors[0].cost} and last and highest cost ${neighbors[neighbors.length - 1].cost}`);
 
                 // can compare to last
                 if (this.matches.length >= 1) {
                     const lastMatch = this.matches[this.matches.length - 1];
 
                     const daysApart = this.daysApart(lastMatch.date, lowestMatch.date);
-                    if (daysApart <= 3) {
+                    if (daysApart <= algoParameters.minDaysApart) {
 
-                        console.log(`Days apart is ${daysApart} so replacing last`);
 
                         // compare cost
                         lowestMatch = lastMatch.cost < lowestMatch.cost ? lastMatch : lowestMatch;
                         this.matches[this.matches.length - 1] = lowestMatch;
                     } else {
-                        console.log("adding match");
                         // for if its not in between days
                         this.matches.push(lowestMatch);
                     }

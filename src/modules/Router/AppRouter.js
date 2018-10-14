@@ -10,9 +10,9 @@ import Error from '../Views/Error';
 
 // import store
 import AppRouterStore from './AppRouterStore';
-import SectorView from '../Sector/SectorView';
-import BlogView from '../Blog/BlogView';
-import PostView from '../Blog/Post/PostView';
+//import SectorView from '../Sector/SectorView';
+//import BlogView from '../Blog/BlogView';
+//import PostView from '../Blog/Post/PostView';
 import PatternRecognitionView from '../StockPatternRecognition/PatternRecognitionView';
 
 @observer

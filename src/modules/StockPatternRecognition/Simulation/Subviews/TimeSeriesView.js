@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { Header, Divider, Segment } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
-import {
-    FlexibleWidthXYPlot, LineMarkSeries,
-    XAxis, YAxis, VerticalGridLines, HorizontalGridLines
-} from 'react-vis';
+import { FlexibleWidthXYPlot, LineMarkSeries, XAxis, YAxis } from 'react-vis';
 
 // Stores
 import TimeSeriesStore from '../Stores/TimeSeriesStore';
@@ -18,27 +15,21 @@ export default class TimeSeriesView extends React.Component {
     render() {
 
         const { attributes } = TimeSeriesStore;
+        const { input } = InputStore;
         
-        const metaOne = `${attributes.numberDataPoints} data points for $${attributes.startPrice} $to ${attributes.endPrice}`
-        const metaTwo = `Time series prices from ${attributes.startDate} to ${attributes.endDate}`;
+        const meta = `${input.symbol}  -  ${attributes.startDate} at $${attributes.startPrice} to ${attributes.endDate} at $${attributes.endPrice}  -  ${attributes.numberDataPoints} points`;
 
-        // Create {x: ..., y: ...} array for time series graph
         const timeseriesGraphData = TimeSeriesStore.data.map((data, index) => {
             return Coordinate(index, data.price);
         });
 
         return (
             <Segment className='bg-light'>
-                
-                <Header as='h2' content={`${InputStore.input.symbol}`} />
-                <p>{metaOne}</p>
-                <p>{metaTwo}</p>
-                <Divider />
+
+                <Header as='h2' content={meta} />
 
                 <Segment>
                     <FlexibleWidthXYPlot height={300} >
-                        <VerticalGridLines />
-                        <HorizontalGridLines />
                         <XAxis />
                         <YAxis />
                         <LineMarkSeries data={timeseriesGraphData} />

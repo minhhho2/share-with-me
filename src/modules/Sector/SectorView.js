@@ -3,7 +3,6 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Header, Table } from 'semantic-ui-react';
 import SectorStore from './SectorStore';
-import _ from 'lodash';
 
 @observer
 export default class SectorView extends React.Component {

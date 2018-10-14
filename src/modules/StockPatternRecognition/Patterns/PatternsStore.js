@@ -10,23 +10,29 @@ import * as utils from '../Simulation/Stores/utils';
 
 class PatternsStore {
 
-    @observable definedPatterns = [];
-    @observable sampledPatterns = [];
-    @observable patternCounts = [];
+    @observable definedPatterns = [];   // Predefined patterns
+    @observable sampledPatterns = [];   // Labelled patterns
+
+    /* For storing statistics */
+    @observable patternCounts = [];     // Statistic stores
     @observable periodCounts = [];
 
+    /* For adjusting sampling types */
+    @observable maxOffset = 12;
+    @observable incrementOffset = 4;
 
     @action
     setup = () => {
-
         // Get defined patterns from static file
         this.definedPatterns = MockPatterns.defined.slice();
+        this.sampledPatterns = [];
+        this.patternCounts = [];
+        this.periodCounts = [];
 
         // Get Sampled Patterns
         StockPatternApi.readAll().then(res => {
 
             this.sampledPatterns = res.data.slice();
-            console.log(this.sampledPatterns);
 
             // Create patterns if empty
             if (this.sampledPatterns.length <= 0) {
@@ -36,68 +42,29 @@ class PatternsStore {
             this.computeStats();
 
         }).catch(err => console.log(err));
-
-    }
-
-    computeStats = () => {
-        this.patternCounts = [];
-
-        this.definedPatterns.map(pattern => {
-
-            const patternName = pattern.name;
-
-            var matches = this.sampledPatterns.filter(sample => {
-                return sample.name === patternName && sample.cost != 0;
-            })
-            this.patternCounts.push({
-                name: patternName,
-                count: matches.length
-            });
-        });
-
-        this.periodCounts = [];
-
-        var uniquePeriods = _.union(this.sampledPatterns.map(pattern => { return pattern.period }));
-
-        uniquePeriods.forEach(period => {
-            var numPeriodCount = this.sampledPatterns.filter(pattern => {
-                return pattern.period === period;
-            }).length;
-
-            this.periodCounts.push({
-                name: period,
-                count: numPeriodCount
-            });
-        });
     }
 
 
+    /* 
+        Creates similar patterns for a given pattern.
+    */
     createPatterns = () => {
         var promises = [];
 
-        // Create patterns
         this.definedPatterns.forEach(pattern => {
             promises.concat(this.createPatternSlantedDown(pattern));
             promises.concat(this.createPatternSlantedUp(pattern));
             //promises.concat(this.createPatternNoise(pattern));
         });
 
-        // Read pattersn from database
-        Promise.all(promises).then(
-            StockPatternApi.readAll().then(res => {
-
-                this.sampledPatterns = res.data.slice();
-                console.log(this.sampledPatterns);
-
-            }).catch(err => console.log(err))
-        );
+        return promises;
     }
 
     createPatternSlantedDown = (pattern) => {
 
         var promises = [];
 
-        for (var offset = 0; offset <= 6; offset += 3) {    // TODO: SET to 30
+        for (var offset = 0; offset <= this.maxOffset; offset += this.incrementOffset) {
 
             var dupPattern = JSON.parse(JSON.stringify(pattern));
             dupPattern.values = dupPattern.values.map((value, index) => {
@@ -120,7 +87,7 @@ class PatternsStore {
         var promises = [];
 
         // slant up in offsets of 5
-        for (var offset = 0; offset <= 6; offset += 3) {    // TODO: SET to 30
+        for (var offset = 0; offset <= this.maxOffset; offset += this.incrementOffset) {
 
             var dupPattern = JSON.parse(JSON.stringify(pattern));
             dupPattern.values = dupPattern.values.map((value, index) => {
@@ -156,6 +123,38 @@ class PatternsStore {
         }
 
         return promises;
+    }
+
+    computeStats = () => {
+        this.patternCounts = [];
+
+        this.definedPatterns.map(pattern => {
+
+            const patternName = pattern.name;
+
+            var matches = this.sampledPatterns.filter(sample => {
+                return sample.name === patternName && sample.cost != 0;
+            })
+            this.patternCounts.push({
+                name: patternName,
+                count: matches.length
+            });
+        });
+
+        this.periodCounts = [];
+
+        var uniquePeriods = _.union(this.sampledPatterns.map(pattern => { return pattern.period }));
+
+        uniquePeriods.forEach(period => {
+            var numPeriodCount = this.sampledPatterns.filter(pattern => {
+                return pattern.period === period;
+            }).length;
+
+            this.periodCounts.push({
+                name: period,
+                count: numPeriodCount
+            });
+        });
     }
 }
 
