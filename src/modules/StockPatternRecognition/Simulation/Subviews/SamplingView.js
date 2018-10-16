@@ -18,7 +18,6 @@ import SlidingWindowContainer from './SlidingWindowContainer';
 import SampleCardGraphContainer from './SampleCardGraphContainer';
 
 import { StockPattern } from '../../../../models/StockPattern';
-import { isNull } from 'util';
 
 @observer
 export default class SamplingView extends React.Component {
@@ -74,9 +73,11 @@ export default class SamplingView extends React.Component {
         const sample = StockPattern(
             undefined, undefined, prices,
             TimeSeriesStore.data[windowPos].date,
-            period + input.period, input.symbol
+            period + '|' + input.period, input.symbol
         );
         
+
+
         SamplingStore.classifySample(sample);           // compare and classift
         SamplingStore.windowPos = windowPos + 1;        // increment samples
 
@@ -88,7 +89,8 @@ export default class SamplingView extends React.Component {
                 SamplingStore.windowPos = 0;
                 SamplingStore.period = SamplingStore.timeseriesLengthsToCheck.pop();
                 SamplingStore.setMinDaysApart(SamplingStore.period);
-            // Stop timer if no period left
+            
+                // Stop timer if no period left
             } else {
                 SamplingStore.clear();
             }

@@ -14,7 +14,7 @@ class PatternRecognitionStore {
             name: 'simulation'
         },
         {
-            name: 'resampling'
+            name: 'normalizing'
         }
     ]
 

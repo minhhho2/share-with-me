@@ -2,11 +2,9 @@
 import DTW from 'dtw';
 import PARAMS from '../constants/Params';
 import * as Resampling from '../Helper/Resampling';
-import * as Utils from '../Helper/Utils';
 
 
 import { StockPattern } from '../../../models/StockPattern';
-
 
 /* 
     Calculates distance between two time series data. 

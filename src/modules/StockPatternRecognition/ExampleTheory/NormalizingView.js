@@ -1,23 +1,16 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Grid, Segment, Header } from 'semantic-ui-react'
-
-import {
-    FlexibleWidthXYPlot, LineMarkSeries,
-    XAxis, YAxis
-} from 'react-vis';
-
+import { FlexibleWidthXYPlot, LineMarkSeries, XAxis, YAxis } from 'react-vis';
+import _ from 'lodash';
 
 
 import * as Utils from '../Helper/Utils';
 import * as Resampling from '../Helper/Resampling';
 import MockPattern from '../constants/MockPatterns';
 
-import _ from 'lodash';
-
-
 @observer
-export default class ResamplingView extends React.Component {
+export default class NormalizingView extends React.Component {
 
     render() {
         var patternSeries = MockPattern.defined[0].values.slice(); //[0, 50, 100, 150, 200, 150, 100, 50, 0, 50, 100, 150, 200, 150, 100, 50, 0];
@@ -35,19 +28,12 @@ export default class ResamplingView extends React.Component {
 
         return (
             <div className='bg-light'>
-                <Segment>
-                    <Header as='h3'>
-                        Original time series data displayed in red
-                    </Header>
-                    <Header as='h3'>
-                        Re-sampled time series data displayed in green
-                    </Header>
-                </Segment>
 
+                <Header as='h1' content='Normalizing time series length by upsampling and down sampling' />
                 <Segment>
                     <Grid>
                         <Grid.Column width={8}>
-                            <Header as='h1' content='Original time series of length 33' />
+                            <Header as='h2' content='Time series for defined patterns at length 33 and 33' />
                             <FlexibleWidthXYPlot height={200}>
                                 <XAxis />
                                 <YAxis />
@@ -61,9 +47,9 @@ export default class ResamplingView extends React.Component {
                                 />
                             </FlexibleWidthXYPlot>
                         </Grid.Column>
-                        
+
                         <Grid.Column width={8}>
-                            <Header as='h1' content='Original time series of length 79' />
+                            <Header as='h2' content='Time series for sample at length 79 and 33' />
                             <FlexibleWidthXYPlot height={200}>
                                 <XAxis />
                                 <YAxis />
@@ -81,7 +67,7 @@ export default class ResamplingView extends React.Component {
                 </Segment>
 
                 <Segment>
-                    <Header as='h1' content='Both time series re-sampled to length 33' />
+                    <Header as='h2' content='Both time series re-sampled to length 33' />
                     <FlexibleWidthXYPlot height={200}>
                         <XAxis />
                         <YAxis />
@@ -94,6 +80,35 @@ export default class ResamplingView extends React.Component {
                             lineStyle={{ stroke: 'green' }} markStyle={{ stroke: 'pink' }}
                         />
                     </FlexibleWidthXYPlot>
+                </Segment>
+
+                <Header as='h1' content='Normalizing time series height by scaling min and max value' />
+                <Segment>
+                    <Grid>
+                        <Grid.Column width={8}>
+                            <Header as='h2' content='Sampled stock price time series' />
+                            <FlexibleWidthXYPlot height={200}>
+                                <XAxis />
+                                <YAxis />
+                                <LineMarkSeries
+                                    data={Utils.createCoordinateData(samplePatternSeries)}
+                                    lineStyle={{ stroke: 'red' }} markStyle={{ stroke: 'blue' }}
+                                />
+                            </FlexibleWidthXYPlot>
+                        </Grid.Column>
+
+                        <Grid.Column width={8}>
+                            <Header as='h2' content='Normalized stock price time series to between 0 and 200' />
+                            <FlexibleWidthXYPlot height={200}>
+                                <XAxis />
+                                <YAxis />
+                                <LineMarkSeries
+                                    data={Utils.createCoordinateData(Utils.normalize(samplePatternSeries))}
+                                    lineStyle={{ stroke: 'red' }} markStyle={{ stroke: 'blue' }}
+                                />
+                            </FlexibleWidthXYPlot>
+                        </Grid.Column>
+                    </Grid>
                 </Segment>
             </div>
         )

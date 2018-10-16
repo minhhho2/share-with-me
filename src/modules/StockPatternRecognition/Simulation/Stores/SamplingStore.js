@@ -49,7 +49,6 @@ class SamplingStore {
         this.currentSampleValues = Array.apply(null, { length: this.period }).map(Function.call, Number);
 
 
-
         // Get Sampled Patterns
         StockPatternApi.readAll()
             .then(res => { this.patterns = res.data.slice(); })
@@ -94,17 +93,14 @@ class SamplingStore {
 
                 const isClose = Utils.daysApart(lastMatch.date, closestNeighbor.date) <= this.minDaysApart; //PARAMS.model.minDaysApart;
                 const isClosestNeighborLowerDistance = closestNeighbor.cost < lastMatch.cost;
-                
-                const isSamePatternName = closestNeighbor.name === lastMatch.name;
-                if (isSamePatternName) {
-                    alert('SAME NAME FOUND');
-                }
+                const isSameClass = closestNeighbor.name === lastMatch.name;
+
                 // Remove last one as its the same
-                if (isClose && isClosestNeighborLowerDistance && isSamePatternName) {
+                if (isClose && isClosestNeighborLowerDistance && isSameClass) {
                     this.matches.pop();
 
                     // Exit adding as its the same date but worst
-                } else if (isClose && isSamePatternName && !isClosestNeighborLowerDistance) {
+                } else if (isClose && isSameClass && !isClosestNeighborLowerDistance) {
                     return;
                 }
             }
@@ -115,22 +111,21 @@ class SamplingStore {
     }
 
     setMinDaysApart = (period) => {
-        // TODO: MULTIPLY by 3 CHANGE TO THREE DAYS APART
-        // REMOVE COMPACT, only need full
-
-        var multiplier = 3;
+        var multiplier = 0.10 * 3;
         var days = 0;
+
         switch (InputStore.input.period) {
             case 'TIME_SERIES_DAILY':
-                days = period * 0.10 * multiplier;
+                days = period * multiplier;
                 break;
             case 'TIME_SERIES_WEEKLY':
-                days = period * 7 * 0.10 * multiplier;
+                days = period * 7 * multiplier;
                 break;
             case 'TIME_SERIES_MONTHLY':
-                days = period * 4 * 7 * 0.10 * multiplier;
+                days = period * 4 * 7 * multiplier;
                 break;
             default:
+                console.log("Setting Min Days Apart: incorrect time series provided");
                 break;
         }
         
@@ -140,21 +135,18 @@ class SamplingStore {
     }
 
     getPeriodGroups = (timeseriesPeriod) => {
-        const daily = [5, 10, 15, 20, 25, 30, 35, 40] // 1 week 2 week 3 week 4 week 5 week 6 week 7 week 8 week
+        const daily = [10, 15, 20, 25, 30, 35, 40] // 2 week 3 week 4 week 5 week 6 week 7 week 8 week
         const weekly = [12, 16, 20, 24, 28, 32, 36, 40, 48] // 3 month, 4 month, 5 month, 6 month, 7 month. 8 month, 9 month, 10 month, 11 month, 12 month
         const monthly = [12, 18, 24, 30, 36] // 1 year, 1.5 year, 2 year, 2.5 year, 3 year
 
         switch (timeseriesPeriod) {
             case 'TIME_SERIES_DAILY':
                 this.timeseriesLengthsToCheck = daily.slice();
-                //this.minDaysApart = 3;
                 break
             case 'TIME_SERIES_WEEKLY':
                 this.timeseriesLengthsToCheck = weekly.slice();
-                //this.minDaysApart = 10; // 1.5 weeks
                 break
             case 'TIME_SERIES_MONTHLY':
-                //this.minDaysApart = 45; // 1.6 months
                 this.timeseriesLengthsToCheck = monthly.slice();
                 break;
             default:

@@ -9,16 +9,16 @@ const APIKEY = config.alphaVantageApiKey;
 
 class TimeSeriesApi {
 
-    get = (period, symbol, outputSize) => {
-        console.log(`Time Series API for ${period} and ${symbol} and ${outputSize}`);
+    // Make Api Call - example - https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=ASX:XJO&interval=60min&outputsize=full&apikey=${APIKEY}
+    get = (period, symbol) => {
+        console.log(`Time Series API for ${period} and ${symbol}`);
 
-        this.checkArguments(period, symbol, outputSize); // check arguments
+        this.checkArguments(period, symbol); // check arguments
 
-        // Make Api Call - example - https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=ASX:XJO&interval=60min&outputsize=full&apikey=${APIKEY}
-        return axios.get(`${BASE_URL}query?function=${period}&symbol=${symbol}&outputsize=${outputSize}&apikey=${APIKEY}`);
+        return axios.get(`${BASE_URL}query?function=${period}&symbol=${symbol}&outputsize=full&apikey=${APIKEY}`);
     }
 
-    checkArguments = (period, symbol, outputSize) => {
+    checkArguments = (period, symbol) => {
         if (!AlphaOptions.periodOptions.includes(period)) {
             console.log(`Error @ TimeSeriesApi.js: Incorrect period, ${period},  provided`);
         }
@@ -26,11 +26,6 @@ class TimeSeriesApi {
         // check symbol
         if (!AlphaOptions.symbolOptions.includes(symbol)) {
             console.log(`Error @ TimeSeriesApi.js: Incorrect symbol, ${symbol},  provided`);
-        }
-
-        // check outputSize
-        if (!AlphaOptions.outputSizeOptions.includes(outputSize)) {
-            console.log(`Error @ TimeSeriesApi.js: Incorrect outputSize, ${outputSize}, provided`);
         }
     }
 }

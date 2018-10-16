@@ -1,15 +1,19 @@
 import * as React from 'react';
 import { Card, Button, Form, Header, Segment, Grid } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
-import {
-    FlexibleWidthXYPlot, LineMarkSeries,
-    HorizontalGridLines, VerticalGridLines, XAxis, YAxis
-} from 'react-vis';
+import { FlexibleWidthXYPlot, LineMarkSeries, XAxis, YAxis } from 'react-vis';
 
+
+
+// Custom components
+import SampleCardGraphContainer from '../Simulation/Subviews/SampleCardGraphContainer';
+
+// Stores
 import PatternsStore from './PatternsStore';
+
+// Misc
 import StockPatternApi from '../../../api/StockPatternApi';
 import * as utils from '../Simulation/Stores/utils';
-import SampleCardGraphContainer from '../Simulation/Subviews/SampleCardGraphContainer';
 
 @observer
 export default class PatternsView extends React.Component {
@@ -60,8 +64,8 @@ export default class PatternsView extends React.Component {
 
         for (var i = 0; i < sampledPatterns.length - 1; i++) {
             for (var j = i + 1; j < sampledPatterns.length; j++) {
-                const a = sampledPatterns[i];
-                const b = sampledPatterns[j];
+
+                const a = sampledPatterns[i], b = sampledPatterns[j];
 
                 const difference = utils.differenceArrays(a.values, b.values);
 
@@ -109,44 +113,57 @@ export default class PatternsView extends React.Component {
                     </Card.Group>
                 </Segment>
 
-                {/* Control Form */}
                 <Segment>
-                    <Form>
-                        <Form.Group>
-                            <Form.Button fluid onClick={this.pruneAll} content='Prune All' />
-                            <Form.Button fluid onClick={this.pruneSameValues} content='Prune Same Values' />
-                            <Form.Button fluid onClick={this.refresh} content='Refresh' />
-                        </Form.Group>
-                    </Form>
-                </Segment>
+                    <Grid>
+                        <Grid.Column width={8}>
+                            {/* Control Form */}
 
-                {/* Statistics */}
-                <Segment>
-                    <Header as='h1' content='Dataset Statistics' />
-                    <Grid columns='equal'>
-                        <Grid.Column>
-                            {patternCounts.map(pattern => {
-                                return (<p key={pattern.name}>{`${pattern.name} with ${pattern.count}`}</p>);
-                            })}
+                            <Segment>
+
+                                <Form>
+                                    <Form.Group>
+                                        <Form.Button fluid onClick={this.pruneAll} content='Prune All' />
+                                        <Form.Button fluid onClick={this.pruneSameValues} content='Prune Same Values' />
+                                        <Form.Button fluid onClick={this.refresh} content='Refresh' />
+                                    </Form.Group>
+                                </Form>
+                            </Segment>
+                        </Grid.Column>
+                        <Grid.Column width={8}>
+                            {/* Statistics */}
+                            <Segment>
+                                <Header as='h1' content='Dataset Statistics' />
+                                <Grid columns='equal'>
+
+                                    <Grid.Column>
+                                        <p>{`small: ${PatternsStore.small}`}</p>
+                                        <p>{`medium: ${PatternsStore.med}`}</p>
+                                        <p>{`large: ${PatternsStore.large}`}</p>
+                                    </Grid.Column>
+
+                                    <Grid.Column>
+                                        {Object.keys(patternCounts).forEach(key => {
+                                            return (
+                                                <p key={key}>
+                                                    {key + ': ' + patternCounts[key]}
+                                                </p>
+                                            )
+                                        })}
+                                    </Grid.Column>
+                                </Grid>
+                            </Segment>
                         </Grid.Column>
 
-                        <Grid.Column>
-                            {periodCounts.map((pattern, index) => {
-                                return (<p key={index}>{`${pattern.name} days with ${pattern.count}`}</p>);
-                            })}
-                        </Grid.Column>
                     </Grid>
 
-
-
                 </Segment>
+
+
 
                 {/* Samples */}
                 <Segment>
-                    <Header as='h1' content='Sampled Match Stock Patterns' />
-
+                    <Header as='h1' content='Current Dataset for kNN Classifier' />
                     <Card.Group itemsPerRow={6}>
-
                         {sampledPatterns.map((pattern) => {
                             return (
                                 <Card className='' key={pattern._id.$oid}>
@@ -164,8 +181,6 @@ export default class PatternsView extends React.Component {
 
                                     <Card.Content>
                                         <FlexibleWidthXYPlot height={200}>
-                                            <VerticalGridLines />
-                                            <HorizontalGridLines />
                                             <XAxis />
                                             <YAxis />
                                             <LineMarkSeries
@@ -180,23 +195,9 @@ export default class PatternsView extends React.Component {
                                         <Button id={pattern._id.$oid} content='delete' fluid negative onClick={this.onDelete} />
                                     </Card.Content>
                                 </Card>
-
                             );
                         })}
                     </Card.Group>
-                </Segment>
-
-
-                <Segment>
-                    <p>more pattern observation in lower periods BUT more false positive -> patterns is not easily distinguished, </p>
-                    <p>less pattern observation in higher periods BUT more true positive -> patterns are a lot more recognizable </p>
-                    <p>incremental learning gives more labels BUT new labels become less distinguishable -> need to reduce threshold </p>
-                    <p>Little patterns in non-volatile stocks</p>
-                    <p>Patterns with alot of maximas and minimas are detected more in short term due to stock osciliation and cost function </p>
-                    <p>Pattenrs with less min/maximas are detected more accurately</p>
-                    <p> Adding slanted patterns -> more observations in long term -> more incorrect observations in short term</p>
-
-                    <p>Longer periods could detect substantially more patterns after using incremental learning acorss multiple stock rpices</p>
                 </Segment>
             </div>
         )

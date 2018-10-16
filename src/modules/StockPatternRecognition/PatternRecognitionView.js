@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Step, Segment, Grid } from 'semantic-ui-react'
+import { Step, Segment } from 'semantic-ui-react'
 import { observer } from 'mobx-react';
 
 import PatternRecognitionStore from './PatternRecognitionStore';
 
-
 import PatternsView from './Patterns/PatternsView';
 import SimulationView from './Simulation/SimulationView';
-import ResamplingView from './Resampling/ResamplingView';
+import NormalizingView from './ExampleTheory/NormalizingView';
 
 @observer
 export default class PatternRecognitionView extends React.Component {
@@ -22,8 +21,8 @@ export default class PatternRecognitionView extends React.Component {
                 return <PatternsView />
             case 'simulation':
                 return <SimulationView />
-            case 'resampling':
-                return <ResamplingView />
+            case 'normalizing':
+                return <NormalizingView />
             default:
                 alert("incorrect view selected in pattern recognition");
                 break;

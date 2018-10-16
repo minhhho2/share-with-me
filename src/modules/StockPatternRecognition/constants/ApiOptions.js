@@ -52,18 +52,6 @@ const OPTIONS = {
             text: 'ASX:PLS',
             value: 'ASX:PLS',
         }
-    ],
-    outputSize: [
-        {
-            key: 'compact',
-            text: 'compact',
-            value: 'compact',
-        },
-        {
-            key: 'full',
-            text: 'full',
-            value: 'full',
-        }
     ]
 }
 
