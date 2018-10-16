@@ -8,13 +8,16 @@ import PolynomialRegression from 'ml-regression-polynomial';
 */
 export function getTimeSeriesKey(keys) {
 
-    const DESIRED_RESP_KEY = 'Time Series (Daily)';
+    const DESIRED_RESP_KEYS = ['Time Series (Daily)', 'Weekly Time Series', 'Monthly Time Series'];
 
-    if (keys.includes(DESIRED_RESP_KEY)) {
-        return DESIRED_RESP_KEY;
+    const possibleKeys = DESIRED_RESP_KEYS.filter(e => keys.includes(e));
 
+    if (possibleKeys.length === 1) {
+        console.log(possibleKeys[0]);
+        return possibleKeys[0];
+        
     } else {
-        throw new Error(`Time Series (Daily) was not among the keys from the response: ${keys}`);
+        throw new Error(`Time Series Key was not among the keys from the response: ${keys}`);
     }
 }
 
@@ -61,3 +64,16 @@ export function differenceArrays(valuesOne, valuesTwo){
 
     return difference;
 }
+
+/* 
+
+    const DESIRED_RESP_KEY = 'Time Series (Daily)';
+
+    if (keys.includes(DESIRED_RESP_KEY)) {
+        return DESIRED_RESP_KEY;
+
+    } else {
+        throw new Error(`Time Series (Monthly) was not among the keys from the response: ${keys}`);
+    }
+
+*/
