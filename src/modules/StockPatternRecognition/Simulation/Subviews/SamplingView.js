@@ -18,6 +18,7 @@ import SlidingWindowContainer from './SlidingWindowContainer';
 import SampleCardGraphContainer from './SampleCardGraphContainer';
 
 import { StockPattern } from '../../../../models/StockPattern';
+import { isNull } from 'util';
 
 @observer
 export default class SamplingView extends React.Component {
@@ -44,6 +45,19 @@ export default class SamplingView extends React.Component {
 
     onStartSampling = () => {
         this.matches = [];
+
+        // Sets periods to check
+        SamplingStore.getPeriodGroups(InputStore.input.period);
+
+
+        console.log(`Period selected is ${InputStore.input.period} `);
+        console.log(`Periods to process is  ${SamplingStore.timeseriesLengthsToCheck}`);
+
+        // Set period
+        SamplingStore.period = SamplingStore.timeseriesLengthsToCheck.pop();
+        SamplingStore.setMinDaysApart(SamplingStore.period);
+
+        // Start processing
         SamplingStore.intervalId = setInterval(this.timer, 5);
     }
 
@@ -57,19 +71,27 @@ export default class SamplingView extends React.Component {
 
         SamplingStore.setCurrentSampleValues(prices);   // set values for graph
 
-
         const sample = StockPattern(
             undefined, undefined, prices,
             TimeSeriesStore.data[windowPos].date,
-            period, input.symbol
+            period + input.period, input.symbol
         );
         
         SamplingStore.classifySample(sample);           // compare and classift
         SamplingStore.windowPos = windowPos + 1;        // increment samples
 
-        // stop sampling
+        // Finish one period so move to next or stop processing
         if (SamplingStore.windowPos > (data.length - period)) {
-            SamplingStore.clear();
+
+            // Move onto next period if there is one
+            if (SamplingStore.timeseriesLengthsToCheck.length > 0) {
+                SamplingStore.windowPos = 0;
+                SamplingStore.period = SamplingStore.timeseriesLengthsToCheck.pop();
+                SamplingStore.setMinDaysApart(SamplingStore.period);
+            // Stop timer if no period left
+            } else {
+                SamplingStore.clear();
+            }
         }
     }
 

@@ -30,9 +30,8 @@ export default class InputView extends React.Component {
     onSubmitInputs = () => {
 
         const { input } = InputStore;
-        SamplingStore.symbol = input.symbol;
 
-        TimeSeriesApi.get(input.symbol, input.outputSize)
+        TimeSeriesApi.get(input.period, input.symbol, input.outputSize)
             .then(res => {
 
                 console.log(res.data);
@@ -56,6 +55,11 @@ export default class InputView extends React.Component {
 
                 // Store sorted oldest to latest price data
                 TimeSeriesStore.data = utils.sortObjectsByDate(data);
+
+                // get first 1000 for processing
+                if (timeSeriesPriceKey === 'Time Series (Daily)') {
+                    TimeSeriesStore.data = TimeSeriesStore.data.slice(TimeSeriesStore.data.length - 1000, TimeSeriesStore.data.length - 1);
+                }
                 TimeSeriesStore.updateAttributes();
             })
             .catch(err => { console.log(err) });
@@ -74,24 +78,29 @@ export default class InputView extends React.Component {
                     {/* Form Inputs */}
                     <Grid.Column>
                         <Form>
-                            
-                            <Form.Group>
 
-                                <Form.Dropdown width={5}
+                            <Form.Group>
+                                <Form.Dropdown width={4}
+                                    name='period' fluid selection placeholder='select your periodicity'
+                                    value={input.period} options={Options.period}
+                                    onChange={this.handleInputSelectionChange}
+                                />
+
+                                <Form.Dropdown width={4}
                                     name='symbol' fluid selection placeholder='select your symbol'
                                     value={input.symbol} options={Options.symbol}
                                     onChange={this.handleInputSelectionChange}
                                 />
 
-                                <Form.Dropdown width={5}
+                                <Form.Dropdown width={4}
                                     name='outputSize' fluid selection placeholder='select your output size'
                                     value={input.outputSize} options={Options.outputSize}
                                     onChange={this.handleInputSelectionChange}
                                 />
 
-                                <Form.Button width={2} positive fluid content='Submit' onClick={this.onSubmitInputs} />
-                                <Form.Button width={2}  color='orange' fluid content='Default' onClick={this.onDefaultInputs} />
-                                <Form.Button width={2}  negative fluid content='Clear' onClick={this.onClearInputs} />
+                                <Form.Button width={1} positive fluid content='Submit' onClick={this.onSubmitInputs} />
+                                <Form.Button width={1} color='orange' fluid content='Default' onClick={this.onDefaultInputs} />
+                                <Form.Button width={1} negative fluid content='Clear' onClick={this.onClearInputs} />
                             </Form.Group>
                         </Form>
                     </Grid.Column>

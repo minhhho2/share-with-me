@@ -10,6 +10,7 @@ import * as Utils from '../../Helper/Utils';
 import PARAMS from '../../constants/Params';
 
 import StockPatternApi from '../../../../api/StockPatternApi';
+import InputStore from './InputStore';
 
 /*
 import * as Resampling from '../../Helper/Resampling';
@@ -32,6 +33,8 @@ class SamplingStore {
     @observable patterns = [];  // previous matches from DB/Dataset
     @observable minDaysApart = 0;
 
+    @observable timeseriesLengthsToCheck = [];
+
     @action
     setup = () => {
 
@@ -39,10 +42,13 @@ class SamplingStore {
 
         this.matches = [];
         this.period = 16;
+
         this.minDaysApart = parseInt(this.peirod / 10.0 * 2.0);
 
         this.windowPos = 0;
         this.currentSampleValues = Array.apply(null, { length: this.period }).map(Function.call, Number);
+
+
 
         // Get Sampled Patterns
         StockPatternApi.readAll()
@@ -50,11 +56,13 @@ class SamplingStore {
             .catch(err => { console.log(err) });
     }
 
+    /* 
+        Stops timer, resets window position, resets period
+    */
     @action
     clear = () => {
         clearInterval(this.intervalId);
         this.windowPos = 0;
-        this.peirod = 16;
     }
 
     @action
@@ -81,22 +89,77 @@ class SamplingStore {
             // Delete last match if close dates, is higher distance
             if (this.matches.length >= 1) {
                 const lastMatch = this.matches[this.matches.length - 1];
+                
+                console.log(Utils.daysApart(lastMatch.date, closestNeighbor.date));
 
                 const isClose = Utils.daysApart(lastMatch.date, closestNeighbor.date) <= this.minDaysApart; //PARAMS.model.minDaysApart;
                 const isClosestNeighborLowerDistance = closestNeighbor.cost < lastMatch.cost;
                 
+                const isSamePatternName = closestNeighbor.name === lastMatch.name;
+                if (isSamePatternName) {
+                    alert('SAME NAME FOUND');
+                }
                 // Remove last one as its the same
-                if (isClose && isClosestNeighborLowerDistance) {
-                    var popped = this.matches.pop();
-                
-                // Exit adding as its the same date but worst
-                } else if (isClose && !isClosestNeighborLowerDistance){ 
+                if (isClose && isClosestNeighborLowerDistance && isSamePatternName) {
+                    this.matches.pop();
+
+                    // Exit adding as its the same date but worst
+                } else if (isClose && isSamePatternName && !isClosestNeighborLowerDistance) {
                     return;
                 }
             }
 
             // Add matche
             this.matches.push(closestNeighbor);
+        }
+    }
+
+    setMinDaysApart = (period) => {
+        // TODO: MULTIPLY by 3 CHANGE TO THREE DAYS APART
+        // REMOVE COMPACT, only need full
+
+        var multiplier = 3;
+        var days = 0;
+        switch (InputStore.input.period) {
+            case 'TIME_SERIES_DAILY':
+                days = period * 0.10 * multiplier;
+                break;
+            case 'TIME_SERIES_WEEKLY':
+                days = period * 7 * 0.10 * multiplier;
+                break;
+            case 'TIME_SERIES_MONTHLY':
+                days = period * 4 * 7 * 0.10 * multiplier;
+                break;
+            default:
+                break;
+        }
+        
+        this.minDaysApart = Math.ceil(days);
+        console.log(`Min days apart is ${days} for period ${this.period} for ${InputStore.input.period}`);
+
+    }
+
+    getPeriodGroups = (timeseriesPeriod) => {
+        const daily = [5, 10, 15, 20, 25, 30, 35, 40] // 1 week 2 week 3 week 4 week 5 week 6 week 7 week 8 week
+        const weekly = [12, 16, 20, 24, 28, 32, 36, 40, 48] // 3 month, 4 month, 5 month, 6 month, 7 month. 8 month, 9 month, 10 month, 11 month, 12 month
+        const monthly = [12, 18, 24, 30, 36] // 1 year, 1.5 year, 2 year, 2.5 year, 3 year
+
+        switch (timeseriesPeriod) {
+            case 'TIME_SERIES_DAILY':
+                this.timeseriesLengthsToCheck = daily.slice();
+                //this.minDaysApart = 3;
+                break
+            case 'TIME_SERIES_WEEKLY':
+                this.timeseriesLengthsToCheck = weekly.slice();
+                //this.minDaysApart = 10; // 1.5 weeks
+                break
+            case 'TIME_SERIES_MONTHLY':
+                //this.minDaysApart = 45; // 1.6 months
+                this.timeseriesLengthsToCheck = monthly.slice();
+                break;
+            default:
+                console.log('RECEIVED INCORRECT TIME SERIES KEY');
+                break;
         }
     }
 }

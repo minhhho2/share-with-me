@@ -8,13 +8,15 @@ class InputStore {
 
     @observable input = {
         symbol: '',
-        outputSize: ''
+        outputSize: '',
+        period: ''
     }
         
     @action
     setDefaultValues = () => {
         this.input.symbol = Options.symbol[4].value;
         this.input.outputSize = Options.outputSize[0].value;
+        this.input.period = Options.period[2].value;
     }
 
     @action
