@@ -5,8 +5,7 @@ import MockPatterns from '../constants/MockPatterns';
 import _ from 'lodash';
 
 import StockPatternApi from '../../../api/StockPatternApi';
-import * as utils from '../Simulation/Stores/utils';
-import * as Resampling from '../Helper/Resampling';
+import * as Preprocess from '../Helper/Preprocess';
 
 class PatternsStore {
 
@@ -18,14 +17,14 @@ class PatternsStore {
 
     @observable small = 0;
     @observable med = 0;
-    @observable large = 0;    
+    @observable large = 0;
 
     /* For adjusting sampling types */
     @observable maxOffset = 6;
     @observable incrementOffset = 2;
-    
 
-    @action 
+
+    @action
     reliabilityCheck = () => {
         // go through test set with solutions
         // if date of sample is close to solution => correct
@@ -34,9 +33,15 @@ class PatternsStore {
     }
     @action
     setup = () => {
-        
+
         // Get defined patterns from static file
         this.definedPatterns = MockPatterns.defined.slice();
+
+        this.definedPatterns.forEach(pattern => {
+            pattern.parsedValues = Preprocess.normalize(pattern.rawValues);
+            return pattern;
+        });
+
         this.sampledPatterns = [];
         this.patternCounts = [];
         this.periodCounts = [];
@@ -79,19 +84,23 @@ class PatternsStore {
             var dupUp = JSON.parse(JSON.stringify(pattern));
             var dupDown = JSON.parse(JSON.stringify(pattern));
 
-            dupUp.values = dupUp.values.map((value, index) => {
+            // Setting raw values to new offsetted prices
+            dupUp.rawValues = dupUp.rawValues.map((value, index) => {
                 return value + index * offset;
             });
-            dupDown.values = dupDown.values.map((value, index) => {
-                return value + (dupDown.values.length - 1 - index) * offset;
+            dupDown.rawValues = dupDown.rawValues.map((value, index) => {
+                return value + (dupDown.rawValues.length - 1 - index) * offset;
             });
 
-            dupUp.name = pattern.name;
-            dupDown.name = pattern.name;
+            if (offset === 6) {
+                console.log(dupUp.rawValues);
+            }
 
-            dupUp.values = Resampling.resample(dupUp.values);
-            dupDown.values = Resampling.resample(dupDown.values);
+            // Setting normalized price values
+            dupUp.parsedValues = Preprocess.normalize(dupUp.rawValues);
+            dupDown.parsedValues = Preprocess.normalize(dupDown.rawValues);
 
+            // Create template patterns
             var promiseUp = StockPatternApi.create(dupUp);
             var promiseDown = StockPatternApi.create(dupDown);
 
@@ -103,13 +112,13 @@ class PatternsStore {
         return promises;
     }
 
-    computeDayCount = () => {}
+    computeDayCount = () => { }
 
     computeStats = () => {
 
         this.small = 0;
         this.med = 0;
-        this.large = 0;    
+        this.large = 0;
         this.patternCounts = {};
 
         this.definedPatterns.forEach(pattern => {
@@ -120,6 +129,7 @@ class PatternsStore {
 
         this.sampledPatterns.forEach(pattern => {
 
+            // Dont compute training set, just test set
             if (pattern.period === undefined) {
                 console.log("error in period");
                 return;
@@ -133,71 +143,24 @@ class PatternsStore {
             })
 
             // update period count stats
-            var periodWord = pattern.period.split('|');
-            var periodNumber = parseInt(periodWord[0]);
-            var periodType = periodWord[1].split('_')[2];
+            var periodWord = pattern.period.split(' ');
+            var periodType = periodWord[1];
 
-            var dayCount = 0;
-            switch(periodType) {
+            switch (periodType) {
                 case 'DAILY':
-                    dayCount = periodNumber;
+                    this.small += 1;
                     break;
                 case 'WEEKLY':
-                    dayCount = periodNumber * 7;
+                    this.med += 1;
                     break;
-                
                 case 'MONTHLY':
-                    dayCount = periodNumber * 4 * 7;
+                    this.large += 1;
                     break;
                 default:
                     console.log("NONE OF THE PERIODS FOUND");
                     break;
             }
-
-            if (dayCount >= 0 && dayCount <= 56 ) {
-                this.small += 1;
-            } else if (dayCount >= 84 && dayCount <= 336) {
-                this.med += 1;
-            } else if (dayCount > 336 && dayCount <= 3024) {
-                this.large += 1;
-            } else {
-                console.log(`Day count is ${dayCount} and was not added fix this!@#!@#!@#`);
-            }
         });
-
-        /*
-        // convert number + DAILY to value range
-
-        this.patternCounts = [];
-
-        this.definedPatterns.map(pattern => {
-
-            const patternName = pattern.name;
-
-            var matches = this.sampledPatterns.filter(sample => {
-                return sample.name === patternName && sample.cost != 0;
-            })
-            this.patternCounts.push({
-                name: patternName,
-                count: matches.length
-            });
-        });
-
-        this.periodCounts = [];
-
-        var uniquePeriods = _.union(this.sampledPatterns.map(pattern => { return pattern.period }));
-
-        uniquePeriods.forEach(period => {
-            var numPeriodCount = this.sampledPatterns.filter(pattern => {
-                return pattern.period === period;
-            }).length;
-
-            this.periodCounts.push({
-                name: period,
-                count: numPeriodCount
-            });
-        });
-        */
     }
 }
 

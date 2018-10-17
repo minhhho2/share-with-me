@@ -3,8 +3,6 @@ import { Card, Button, Form, Header, Segment, Grid } from 'semantic-ui-react';
 import { observer } from 'mobx-react';
 import { FlexibleWidthXYPlot, LineMarkSeries, XAxis, YAxis } from 'react-vis';
 
-
-
 // Custom components
 import SampleCardGraphContainer from '../Simulation/Subviews/SampleCardGraphContainer';
 
@@ -13,7 +11,7 @@ import PatternsStore from './PatternsStore';
 
 // Misc
 import StockPatternApi from '../../../api/StockPatternApi';
-import * as utils from '../Simulation/Stores/utils';
+import * as Utils from '../Helper/Utils';
 
 @observer
 export default class PatternsView extends React.Component {
@@ -57,6 +55,10 @@ export default class PatternsView extends React.Component {
         });
     }
 
+    getDateString = (date) => {
+        return new Date(date).toDateString();
+    }
+
     pruneSameValues = () => {
         const { sampledPatterns } = PatternsStore;
 
@@ -67,9 +69,9 @@ export default class PatternsView extends React.Component {
 
                 const a = sampledPatterns[i], b = sampledPatterns[j];
 
-                const difference = utils.differenceArrays(a.values, b.values);
+                const difference = Utils.differenceArrays(a.rawValues, b.rawValues);
 
-                if (a.name === b.name && a.values.length === b.values.length && difference <= 1) {
+                if (a.name === b.name && a.rawValues.length === b.rawValues.length && difference <= 1) {
                     prunableId.push(a._id.$oid);
                     break;
                 }
@@ -94,7 +96,7 @@ export default class PatternsView extends React.Component {
 
     render() {
 
-        const { definedPatterns, sampledPatterns, patternCounts, periodCounts } = PatternsStore;
+        const { definedPatterns, sampledPatterns, patternCounts } = PatternsStore;
 
         return (
             <div>
@@ -105,21 +107,22 @@ export default class PatternsView extends React.Component {
 
                     <Card.Group itemsPerRow={6}>
                         {definedPatterns.map((pattern, index) => {
-                            return (<SampleCardGraphContainer
-                                key={index} title={pattern.name}
-                                data={utils.createCoordinateData(pattern.values)}
-                            />);
+                            return (
+                                <SampleCardGraphContainer
+                                    key={index} title={pattern.name}
+                                    data={Utils.createCoordinateData(pattern.rawValues)}
+                                />
+                            );
                         })}
                     </Card.Group>
                 </Segment>
 
                 <Segment>
                     <Grid>
+                        {/* Control Form */}
+
                         <Grid.Column width={8}>
-                            {/* Control Form */}
-
                             <Segment>
-
                                 <Form>
                                     <Form.Group>
                                         <Form.Button fluid onClick={this.pruneAll} content='Prune All' />
@@ -136,9 +139,9 @@ export default class PatternsView extends React.Component {
                                 <Grid columns='equal'>
 
                                     <Grid.Column>
-                                        <p>{`small: ${PatternsStore.small}`}</p>
-                                        <p>{`medium: ${PatternsStore.med}`}</p>
-                                        <p>{`large: ${PatternsStore.large}`}</p>
+                                        <p>{`X < 3 M: ${PatternsStore.small}`}</p>
+                                        <p>{`3 M <= X <= 12 M: ${PatternsStore.med}`}</p>
+                                        <p>{`12 M > X: ${PatternsStore.large}`}</p>
                                     </Grid.Column>
 
                                     <Grid.Column>
@@ -158,24 +161,20 @@ export default class PatternsView extends React.Component {
 
                 </Segment>
 
-
-
                 {/* Samples */}
                 <Segment>
-                    <Header as='h1' content='Current Dataset for kNN Classifier' />
+                    <Header as='h1' content='Training Set used to learn a model through kNN Classifier Algorithm' />
                     <Card.Group itemsPerRow={6}>
                         {sampledPatterns.map((pattern) => {
                             return (
                                 <Card className='' key={pattern._id.$oid}>
 
-                                    <Card.Content>
-                                        <Card.Header>{pattern.name}</Card.Header>
-                                    </Card.Content>
+                                    <Card.Content><Card.Header>{pattern.name}</Card.Header></Card.Content>
 
                                     <Card.Content>
-                                        <Card.Meta>{`Cost: ${pattern.cost.toFixed(2)}`}</Card.Meta>
+                                        <Card.Meta>{`Distance: ${pattern.distance}`}</Card.Meta>
                                         <Card.Meta>{`Symbol: ${pattern.symbol}`}</Card.Meta>
-                                        <Card.Meta>{`Date: ${pattern.date}`}</Card.Meta>
+                                        <Card.Meta>{`Date: ${this.getDateString(pattern.date)}`}</Card.Meta>
                                         <Card.Meta>{`Period: ${pattern.period}`}</Card.Meta>
                                     </Card.Content>
 
@@ -184,9 +183,26 @@ export default class PatternsView extends React.Component {
                                             <XAxis />
                                             <YAxis />
                                             <LineMarkSeries
-                                                data={utils.createCoordinateData(pattern.values)}
+                                                data={Utils.createCoordinateData(pattern.rawValues)}
                                                 lineStyle={{ stroke: 'red' }}
                                                 markStyle={{ stroke: 'blue' }}
+                                            />
+                                        </FlexibleWidthXYPlot>
+                                    </Card.Content>
+
+                                    <Card.Content>
+                                        <FlexibleWidthXYPlot height={200}>
+                                            <XAxis />
+                                            <YAxis />
+                                            <LineMarkSeries
+                                                data={Utils.createCoordinateData(pattern.parsedValues)}
+                                                lineStyle={{ stroke: 'red' }}
+                                                markStyle={{ stroke: 'blue' }}
+                                            />
+                                            <LineMarkSeries
+                                                data={Utils.createCoordinateData(pattern.matchedPatternValues)}
+                                                lineStyle={{ stroke: 'green' }}
+                                                markStyle={{ stroke: 'yellow' }}
                                             />
                                         </FlexibleWidthXYPlot>
                                     </Card.Content>

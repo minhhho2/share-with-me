@@ -2,7 +2,6 @@ import PARAMS from '../constants/Params';
 import _ from 'lodash';
 import { Coordinate } from '../../../models/Coordinate';
 
-
 /* 
     Performs preprocessing techniques on raw time series financial data.
     rawTimeSeriesData is an object where the keys are dates.
@@ -81,13 +80,18 @@ export function normalize(measurementArr) {
     Used for time series data.
 */
 export function createCoordinateData(values) {
+    if (values === undefined) {
+        return _.range(5).map((value, index) => {
+            return Coordinate(index, value); 
+        });
+    }
+    
     var data = values.map((value, index) => {
         return Coordinate(index, value);
     });
 
     return data;
 }
-
 /* 
     Calculate the number of days between two given dates.
 */
@@ -95,3 +99,17 @@ export function daysApart(dateOne, dateTwo) {
     return Math.abs(Math.round((dateTwo - dateOne) / (1000 * 60 * 60 * 24)));
 }
 
+
+export function differenceArrays(valuesOne, valuesTwo){
+    if (valuesOne.length !== valuesTwo.length) {
+        return 999999;
+    }
+
+    var difference = 0;
+
+    for (var i = 0; i < valuesOne.length; i++) {
+        difference += Math.abs(valuesOne[i] - valuesTwo[i]);
+    }
+
+    return difference;
+}

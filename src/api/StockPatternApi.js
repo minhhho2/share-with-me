@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { StockPattern } from '../models/StockPattern';
 
 const DB_NAME = 'sharewithme';
 const API_KEY = 'gxZrMVaRIfbDLntbuv9FXAngSe-9eotO';
@@ -20,8 +19,20 @@ class StockPatternApi {
     */
     create = (data) => {
         console.log("Creating new pattern");
-        const newPattern = StockPattern(data.name, data.cost, data.values, data.date, data.period);
+
+        const newPattern = {
+            name: data.name,
+            distance: data.distance,
+            rawValues: data.rawValues,   // prices
+            parsedValues: data.parsedValues,
+            matchedPatternValues: data.matchedPatternValues,
+            date: data.date,
+            period: data.period,
+            symbol: data.symbol
+        }
         return axios.post(`${BASE_URL}?apiKey=${API_KEY}`, newPattern);
+
+
     }
 
     /* 

@@ -6,7 +6,10 @@ import { FlexibleWidthXYPlot, LineMarkSeries, XAxis, YAxis } from 'react-vis';
 import _ from 'lodash';
 
 import MockPatterns from '../../constants/MockPatterns';
-import * as utils from '../Stores/utils';
+
+import * as Utils from '../../Helper/Utils';
+import * as Preprocess from '../../Helper/Preprocess';
+import * as Classifier from '../../Helper/Classifier';
 
 // Stores
 import SamplingStore from '../Stores/SamplingStore';
@@ -17,12 +20,12 @@ import StockPatternApi from '../../../../api/StockPatternApi';
 import SlidingWindowContainer from './SlidingWindowContainer';
 import SampleCardGraphContainer from './SampleCardGraphContainer';
 
-import { StockPattern } from '../../../../models/StockPattern';
-
 @observer
 export default class SamplingView extends React.Component {
 
-    componentWillMount() { SamplingStore.setup(); }
+    componentWillMount() {
+        SamplingStore.setup();
+    }
 
     onPeriodChange = (e, data) => {
         SamplingStore.period = parseInt(data.value);
@@ -70,13 +73,13 @@ export default class SamplingView extends React.Component {
 
         SamplingStore.setCurrentSampleValues(prices);   // set values for graph
 
-        const sample = StockPattern(
-            undefined, undefined, prices,
-            TimeSeriesStore.data[windowPos].date,
-            period + '|' + input.period, input.symbol
-        );
-        
-
+        const sample = {
+            rawValues: prices,
+            parsedValues: Preprocess.normalize(prices),
+            date: TimeSeriesStore.data[windowPos].date,
+            period: period + ' ' + input.period,
+            symbol: input.symbol
+        }
 
         SamplingStore.classifySample(sample);           // compare and classift
         SamplingStore.windowPos = windowPos + 1;        // increment samples
@@ -89,7 +92,7 @@ export default class SamplingView extends React.Component {
                 SamplingStore.windowPos = 0;
                 SamplingStore.period = SamplingStore.timeseriesLengthsToCheck.pop();
                 SamplingStore.setMinDaysApart(SamplingStore.period);
-            
+
                 // Stop timer if no period left
             } else {
                 SamplingStore.clear();
@@ -131,7 +134,7 @@ export default class SamplingView extends React.Component {
                             <Card.Group itemsPerRow={1}>
                                 <SampleCardGraphContainer
                                     title={'Current Sample'}
-                                    data={utils.createCoordinateData(currentSampleValues)}
+                                    data={Utils.createCoordinateData(currentSampleValues)}
                                 />
                             </Card.Group>
                         </Grid.Column>
@@ -143,7 +146,7 @@ export default class SamplingView extends React.Component {
                                     return (
                                         <SampleCardGraphContainer
                                             key={index} title={pattern.name}
-                                            data={utils.createCoordinateData(pattern.values)}
+                                            data={Utils.createCoordinateData(pattern.rawValues)}
                                         />
                                     );
                                 })}
@@ -161,9 +164,9 @@ export default class SamplingView extends React.Component {
                                 <Card className='' key={index}>
                                     <Card.Content>
                                         <Card.Header>{pattern.name}</Card.Header>
-                                        <Card.Meta>{`Cost: ${pattern.cost.toFixed(2)}`}</Card.Meta>
+                                        <Card.Meta>{`Cost: ${pattern.distance.toFixed(2)}`}</Card.Meta>
                                         <Card.Meta>{`Symbol: ${pattern.symbol}`}</Card.Meta>
-                                        <Card.Meta>{`Date: ${pattern.date}`}</Card.Meta>
+                                        <Card.Meta>{`Date: ${pattern.date.toDateString()}`}</Card.Meta>
                                         <Card.Meta>{`Period: ${pattern.period}`}</Card.Meta>
                                     </Card.Content>
 
@@ -172,9 +175,26 @@ export default class SamplingView extends React.Component {
                                             <XAxis />
                                             <YAxis />
                                             <LineMarkSeries
-                                                data={utils.createCoordinateData(pattern.values)}
+                                                data={Utils.createCoordinateData(pattern.rawValues)}
                                                 lineStyle={{ stroke: 'red' }}
                                                 markStyle={{ stroke: 'blue' }}
+                                            />
+                                        </FlexibleWidthXYPlot>
+                                    </Card.Content>
+
+                                    <Card.Content>
+                                        <FlexibleWidthXYPlot height={200}>
+                                            <XAxis />
+                                            <YAxis />
+                                            <LineMarkSeries
+                                                data={Utils.createCoordinateData(pattern.parsedValues)}
+                                                lineStyle={{ stroke: 'red' }}
+                                                markStyle={{ stroke: 'blue' }}
+                                            />
+                                            <LineMarkSeries
+                                                data={Utils.createCoordinateData(pattern.matchedPatternValues)}
+                                                lineStyle={{ stroke: 'green' }}
+                                                markStyle={{ stroke: 'yellow' }}
                                             />
                                         </FlexibleWidthXYPlot>
                                     </Card.Content>

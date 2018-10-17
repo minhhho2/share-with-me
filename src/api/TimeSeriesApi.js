@@ -13,6 +13,8 @@ class TimeSeriesApi {
     get = (period, symbol) => {
         console.log(`Time Series API for ${period} and ${symbol}`);
 
+        period = 'TIME_SERIES_' + period;
+        
         this.checkArguments(period, symbol); // check arguments
 
         return axios.get(`${BASE_URL}query?function=${period}&symbol=${symbol}&outputsize=full&apikey=${APIKEY}`);

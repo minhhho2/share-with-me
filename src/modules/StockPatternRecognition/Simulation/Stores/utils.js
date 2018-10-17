@@ -1,6 +1,4 @@
 import _ from 'lodash';
-import { Coordinate } from '../../../../models/Coordinate';
-import PolynomialRegression from 'ml-regression-polynomial';
 
 /* 
     Finds the key for the stock price time series data from alpha vantage api call response.
@@ -17,6 +15,7 @@ export function getTimeSeriesKey(keys) {
         return possibleKeys[0];
         
     } else {
+        
         throw new Error(`Time Series Key was not among the keys from the response: ${keys}`);
     }
 }
@@ -39,31 +38,9 @@ export function sortObjectsByDate(data) {
     return newData;
 }
 
-/* 
-    Create array of {x: ..., y: ...} for react-viz chart from array of values
-    Used for time series data.
-*/
-export function createCoordinateData(values) {
-    var data = values.map((value, index) => {
-        return Coordinate(index, value);
-    });
 
-    return data;
-}
 
-export function differenceArrays(valuesOne, valuesTwo){
-    if (valuesOne.length !== valuesTwo.length) {
-        return 999999;
-    }
 
-    var difference = 0;
-
-    for (var i = 0; i < valuesOne.length; i++) {
-        difference += Math.abs(valuesOne[i] - valuesTwo[i]);
-    }
-
-    return difference;
-}
 
 /* 
 

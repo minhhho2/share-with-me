@@ -1,3 +1,6 @@
+/* 
+    Used for argument checking
+*/
 const ALPHA_OPTIONS = {
     periodOptions: [
         'TIME_SERIES_DAILY',
@@ -7,12 +10,7 @@ const ALPHA_OPTIONS = {
 
     symbolOptions: [
         'ASX:XJO', 'ASX:CBA', 'ASX:ANZ', 'ASX:BHP', 'ASX:ORG', 'ASX:PLS', 'ASX:TLS'
-    ],
-    
-    outputSizeOptions: [
-        'compact',  // 1st 100 data points
-        'full'      // full length up to 20 years
-    ],
+    ]
 }
 
 module.exports = ALPHA_OPTIONS;

@@ -1,11 +1,6 @@
 
 import DTW from 'dtw';
 import PARAMS from '../constants/Params';
-import * as Resampling from '../Helper/Resampling';
-
-
-import { StockPattern } from '../../../models/StockPattern';
-
 /* 
     Calculates distance between two time series data. 
     Data is in the form of array of numbers.
@@ -25,61 +20,27 @@ export function predict(dataset, sample) {
     // Calculate distances for neighbours
     dataset.forEach(pattern => {
 
-        // Normalize sample and datapoint
-        var resampledSample = Resampling.resample(sample.values);
-        var resampledPattern = Resampling.resample(pattern.values);
+        var distance = this.distance(sample.parsedValues, pattern.parsedValues);
 
-        var distance = this.distance(resampledSample, resampledPattern);
-
-        // Store calculated neighbor
-        const newStockPattern = StockPattern(
-            pattern.name, distance, resampledSample,
-            sample.date, sample.period, sample.symbol
-        );
-
+        const newStockPattern = {
+            name: pattern.name,
+            distance: distance,
+            rawValues: sample.rawValues,   // prices
+            parsedValues: sample.parsedValues,
+            matchedPatternValues: pattern.parsedValues,
+            date: sample.date,
+            period: sample.period,
+            symbol: sample.symbol
+        }
    
-        // TODO: object with rawValues, parsedValued
-
         neighbors.push(newStockPattern);
     });
 
+    // Select best neighbors
     neighbors.sort((a, b) => {
-        return a.cost - b.cost;
+        return a.distance - b.distance;
     });
-    
-
-    // Get k nearest neighbor
-    var closestNeighbor = neighbors[0];
+    const closestNeighbor = neighbors[0];
 
     return closestNeighbor;
 }
-
-export function confusionMatrix() {
-
-}
-
-/* 
-
-
-
-
-
-
-
-// No normalize time scale
-export function distance(timeSeriesSample, timeSeriesLabeled) {
-    var dtw = new DTW(AlgoConfig.dtwDistanceMetric);
-    var distance = dtw.compute(utils.normalize(timeSeriesSample), utils.normalize(timeSeriesLabeled));
-    return distance;
-}
-
-// normalize time scale by length
-xport function distance(timeSeriesSample, timeSeriesLabeled) {
-
-    var dtw = new DTW(AlgoConfig.dtwDistanceMetric);
-    var distance = dtw.compute(utils.normalize(timeSeriesSample), utils.normalize(timeSeriesLabeled));
-    var maxLength = timeSeriesLabeled.length > timeSeriesSample.length ? timeSeriesLabeled.length: timeSeriesSample.length
-
-    return distance/maxLength;
-}
-*/
