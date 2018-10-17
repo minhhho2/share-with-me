@@ -37,6 +37,9 @@ export function predict(dataset, sample) {
             sample.date, sample.period, sample.symbol
         );
 
+   
+        // TODO: object with rawValues, parsedValued
+
         neighbors.push(newStockPattern);
     });
 
