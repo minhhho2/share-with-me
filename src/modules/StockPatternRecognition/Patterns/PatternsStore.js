@@ -12,9 +12,6 @@ class PatternsStore {
     @observable definedPatterns = [];   // Predefined patterns
     @observable sampledPatterns = [];   // Labelled patterns
 
-    /* For storing statistics */
-    @observable patternCounts = {};     // Statistic stores
-
     @observable small = 0;
     @observable med = 0;
     @observable large = 0;
@@ -23,21 +20,14 @@ class PatternsStore {
     @observable maxOffset = 6;
     @observable incrementOffset = 2;
 
-
-    @action
-    reliabilityCheck = () => {
-        // go through test set with solutions
-        // if date of sample is close to solution => correct
-        // number predictions made
-        // 
-    }
     @action
     setup = () => {
+        this.reset();
+        this.getDataset();
+    }
 
-        // Get defined patterns from static file
-        this.definedPatterns = MockPatterns.defined.slice();
-
-        this.definedPatterns.forEach(pattern => {
+    reset = () => {
+        this.definedPatterns = MockPatterns.defined.slice().map(pattern => {
             pattern.parsedValues = Preprocess.normalize(pattern.rawValues);
             return pattern;
         });
@@ -45,22 +35,16 @@ class PatternsStore {
         this.sampledPatterns = [];
         this.patternCounts = [];
         this.periodCounts = [];
+    }
 
-        // Get Sampled Patterns
+    getDataset = () => {
         StockPatternApi.readAll().then(res => {
 
             this.sampledPatterns = res.data.slice();
-
-            // Create patterns if empty
-            if (this.sampledPatterns.length <= 0) {
-                this.createPatterns();
-            }
-
             this.computeStats();
 
         }).catch(err => console.log(err));
     }
-
 
     /* Creates similar patterns for a given pattern. */
     createPatterns = () => {
@@ -92,10 +76,6 @@ class PatternsStore {
                 return value + (dupDown.rawValues.length - 1 - index) * offset;
             });
 
-            if (offset === 6) {
-                console.log(dupUp.rawValues);
-            }
-
             // Setting normalized price values
             dupUp.parsedValues = Preprocess.normalize(dupUp.rawValues);
             dupDown.parsedValues = Preprocess.normalize(dupDown.rawValues);
@@ -103,10 +83,10 @@ class PatternsStore {
             // Create template patterns
             var promiseUp = StockPatternApi.create(dupUp);
             var promiseDown = StockPatternApi.create(dupDown);
+            promises.push([promiseUp, promiseDown]);
 
             promiseUp.then(res => console.log(res)).catch(err => console.log(err));
             promiseDown.then(res => console.log(res)).catch(err => console.log(err));
-            promises.push([promiseUp, promiseDown]);
         }
 
         return promises;

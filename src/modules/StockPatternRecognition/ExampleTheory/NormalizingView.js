@@ -29,7 +29,7 @@ export default class NormalizingView extends React.Component {
 
         return (
             <div className='bg-light'>
-                <Segment>
+                <Segment className='p-3'>
                     <Grid columns={2}>
 
                         <Grid.Column width={8}>
@@ -101,88 +101,3 @@ export default class NormalizingView extends React.Component {
         )
     }
 }
-
-        /*
-        
-                <Header as='h1' content='Normalizing time series length by upsampling and down sampling' />
-                <Segment>
-                    <Grid>
-                        <Grid.Column width={8}>
-                            <Header as='h2' content='Time series for defined patterns at length 33 and 33' />
-                            <FlexibleWidthXYPlot height={200}>
-                                <XAxis />
-                                <YAxis />
-                                <LineMarkSeries
-                                    data={Utils.createCoordinateData(Utils.normalize(patternSeries))}
-                                    lineStyle={{ stroke: 'red' }} markStyle={{ stroke: 'blue' }}
-                                />
-                                <LineMarkSeries
-                                    data={Utils.createCoordinateData(Preprocess.normalizeLength(patternSeries))}
-                                    lineStyle={{ stroke: 'green' }} markStyle={{ stroke: 'pink' }}
-                                />
-                            </FlexibleWidthXYPlot>
-                        </Grid.Column>
-
-                        <Grid.Column width={8}>
-                            <Header as='h2' content='Time series for sample at length 79 and 33' />
-                            <FlexibleWidthXYPlot height={200}>
-                                <XAxis />
-                                <YAxis />
-                                <LineMarkSeries
-                                    data={Utils.createCoordinateData(Utils.normalize(samplePatternSeries))}
-                                    lineStyle={{ stroke: 'red' }} markStyle={{ stroke: 'blue' }}
-                                />
-                                <LineMarkSeries
-                                    data={Utils.createCoordinateData(Preprocess.normalizeLength(samplePatternSeries))}
-                                    lineStyle={{ stroke: 'green' }} markStyle={{ stroke: 'pink' }}
-                                />
-                            </FlexibleWidthXYPlot>
-                        </Grid.Column>
-                    </Grid>
-                </Segment>
-
-                <Segment>
-                    <Header as='h2' content='Both time series re-sampled to length 33' />
-                    <FlexibleWidthXYPlot height={200}>
-                        <XAxis />
-                        <YAxis />
-                        <LineMarkSeries
-                            data={Utils.createCoordinateData(resampledPatternSeries)}
-                            lineStyle={{ stroke: 'green' }} markStyle={{ stroke: 'pink' }}
-                        />
-                        <LineMarkSeries
-                            data={Utils.createCoordinateData(resampledsamplePatternSeries)}
-                            lineStyle={{ stroke: 'green' }} markStyle={{ stroke: 'pink' }}
-                        />
-                    </FlexibleWidthXYPlot>
-                </Segment>
-
-                <Header as='h1' content='Normalizing time series height by scaling min and max value' />
-                <Segment>
-                    <Grid>
-                        <Grid.Column width={8}>
-                            <Header as='h2' content='Sampled stock price time series' />
-                            <FlexibleWidthXYPlot height={200}>
-                                <XAxis />
-                                <YAxis />
-                                <LineMarkSeries
-                                    data={Utils.createCoordinateData(samplePatternSeries)}
-                                    lineStyle={{ stroke: 'red' }} markStyle={{ stroke: 'blue' }}
-                                />
-                            </FlexibleWidthXYPlot>
-                        </Grid.Column>
-
-                        <Grid.Column width={8}>
-                            <Header as='h2' content='Normalized stock price time series to between 0 and 200' />
-                            <FlexibleWidthXYPlot height={200}>
-                                <XAxis />
-                                <YAxis />
-                                <LineMarkSeries
-                                    data={Utils.createCoordinateData(Utils.normalize(samplePatternSeries))}
-                                    lineStyle={{ stroke: 'red' }} markStyle={{ stroke: 'blue' }}
-                                />
-                            </FlexibleWidthXYPlot>
-                        </Grid.Column>
-                    </Grid>
-                </Segment>
-                */

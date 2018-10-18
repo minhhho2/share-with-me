@@ -15,10 +15,26 @@ class TimeSeriesStore {
         numberDataPoints: ''
     }
 
+    @observable indexRange = {
+        start: 0,
+        end: 0,
+    }
+
+    @action
+    setup = () => {
+        this.indexRange.end = this.data.length - 1;
+    }
+
     @action
     updateAttributesKeyValue = (key, value) => {
         this.attributes[key] = value;
     }
+
+    @action
+    updateIndexRangeKeyValue = (key, value) => {
+        this.indexRange[key] = value;
+    }
+
 
     @action
     updateAttributes = () => {

@@ -15,8 +15,28 @@ const OPTIONS = {
             text: 'MONTHLY',
             value: 'MONTHLY',
         },
+        {
+            key: 'LONG',
+            text: 'LONG',
+            value: 'LONG',
+        },
+        {
+            key: 'MED',
+            text: 'MED',
+            value: 'MED',
+        },
+        {
+            key: 'SHORT',
+            text: 'SHORT',
+            value: 'SHORT',
+        },
     ],
     symbol: [
+        {
+            key: 'ASX:CSR',
+            text: 'ASX:CSR',
+            value: 'ASX:CSR',
+        },
         {
             key: 'ASX:XJO',
             text: 'ASX:XJO',

@@ -55,6 +55,7 @@
     "react-stockcharts": "^0.7.8",
     "react-timeseries-charts": "^0.15.3",
     "react-vis": "^1.11.2",
+    "regression": "^2.0.1",
     "resolve": "1.6.0",
     "semantic-ui-css": "^2.4.0",
     "semantic-ui-react": "^0.80.2",

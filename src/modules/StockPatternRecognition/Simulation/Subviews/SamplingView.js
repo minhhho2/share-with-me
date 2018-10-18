@@ -10,7 +10,7 @@ import MockPatterns from '../../constants/MockPatterns';
 import * as Utils from '../../Helper/Utils';
 import * as Preprocess from '../../Helper/Preprocess';
 import * as Classifier from '../../Helper/Classifier';
-
+ 
 // Stores
 import SamplingStore from '../Stores/SamplingStore';
 import TimeSeriesStore from '../Stores/TimeSeriesStore';
@@ -19,6 +19,8 @@ import InputStore from '../Stores/InputStore';
 import StockPatternApi from '../../../../api/StockPatternApi';
 import SlidingWindowContainer from './SlidingWindowContainer';
 import SampleCardGraphContainer from './SampleCardGraphContainer';
+import Dataset from '../../constants/Dataset';
+import PARAMS from '../../constants/Params';
 
 @observer
 export default class SamplingView extends React.Component {
@@ -31,6 +33,29 @@ export default class SamplingView extends React.Component {
         SamplingStore.period = parseInt(data.value);
         SamplingStore.minDaysApart = parseInt(SamplingStore.peirod / 10.0 * 3.0);
         SamplingStore.currentSampleValues = _.range(SamplingStore.period);
+    }
+
+    onTestingSet = (testingset) => {
+        var predictions = [];
+
+        testingset.forEach(sample => {
+            
+            sample.parsedValues = Preprocess.normalize(sample.rawValues);
+            sample.date = new Date();
+            sample.period = ' ';
+            sample.symbol = ' ';
+            
+            var closestNeighbor = Classifier.predict(SamplingStore.patterns, sample);
+            
+            if (!(closestNeighbor.distance <= PARAMS.model.maxDTWDistance)) { 
+                closestNeighbor.name = 'undefined';
+            }
+
+            predictions.push(closestNeighbor);
+        });
+
+        const results = Classifier.objectiveFunction(predictions, testingset);
+        console.log(JSON.stringify(results));
     }
 
     onSaveMatchedSamples = () => {        // Add new labeled patterns to database
@@ -46,14 +71,27 @@ export default class SamplingView extends React.Component {
     }
 
     onStartSampling = () => {
-        this.matches = [];
+        clearInterval(SamplingStore.intervalId);
+        const testNames = ['SHORT', 'MED', 'LONG'];
+        const name = InputStore.input.period;
+
+        if (testNames.includes(name)) {
+            var dataset = [];
+            if (name === 'SHORT') {
+                dataset = Dataset.testShort.slice();
+            } else if (name === 'MED') {
+                dataset = Dataset.testMed.slice();
+            } else if (name === 'LONG') {
+                dataset = Dataset.testLong.slice();
+            }
+            this.onTestingSet(dataset);
+            return;
+        };
+
+        SamplingStore.matches = [];
 
         // Sets periods to check
         SamplingStore.getPeriodGroups(InputStore.input.period);
-
-
-        console.log(`Period selected is ${InputStore.input.period} `);
-        console.log(`Periods to process is  ${SamplingStore.timeseriesLengthsToCheck}`);
 
         // Set period
         SamplingStore.period = SamplingStore.timeseriesLengthsToCheck.pop();
@@ -164,12 +202,10 @@ export default class SamplingView extends React.Component {
                                 <Card className='' key={index}>
                                     <Card.Content>
                                         <Card.Header>{pattern.name}</Card.Header>
-                                        <Card.Meta>{`Cost: ${pattern.distance.toFixed(2)}`}</Card.Meta>
-                                        <Card.Meta>{`Symbol: ${pattern.symbol}`}</Card.Meta>
-                                        <Card.Meta>{`Date: ${pattern.date.toDateString()}`}</Card.Meta>
-                                        <Card.Meta>{`Period: ${pattern.period}`}</Card.Meta>
+                                        <Card.Meta>{`Cost: ${pattern.distance.toFixed(2)} - - Symbol: ${pattern.symbol}`}</Card.Meta>
+                                        <Card.Meta>{`Date: ${pattern.date.toDateString()} - - Period: ${pattern.period}`}</Card.Meta>
                                     </Card.Content>
-
+                                    
                                     <Card.Content>
                                         <FlexibleWidthXYPlot height={200}>
                                             <XAxis />

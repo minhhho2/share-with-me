@@ -6,7 +6,6 @@ const PARAMS = {
     model: {
         maxDTWDistance: 350,
         dtwDistanceMetric: { distanceMetric: 'euclidean' }, 
-       // minDaysApart: 4
     },
     resampling: {
         length: 33

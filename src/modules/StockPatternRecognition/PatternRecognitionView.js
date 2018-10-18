@@ -17,9 +17,9 @@ export default class PatternRecognitionView extends React.Component {
 
     findView = (v) => {
         switch (v) {
-            case 'patterns':
+            case 'Training':
                 return <PatternsView />
-            case 'simulation':
+            case 'Testing':
                 return <SimulationView />
             case 'normalizing':
                 return <NormalizingView />

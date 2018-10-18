@@ -35,7 +35,6 @@ export default class PatternsView extends React.Component {
 
     pruneAll = () => {
         const { sampledPatterns } = PatternsStore;
-
         var promises = [];
 
         // Delete all existing patterns
@@ -46,18 +45,16 @@ export default class PatternsView extends React.Component {
         // Wait until all delete finishes 
         Promise.all(promises).then(() => {
             console.log(`Pruned all of ${sampledPatterns.length}`);
+            PatternsStore.reset();
 
-            // Create new patterns
-            var nextPromises = PatternsStore.createPatterns();
-            Promise.all(nextPromises).then(() => {
-                PatternsStore.setup();
+            var promises2 = PatternsStore.createPatterns();
+            Promise.all(promises2).then(() => {
+                PatternsStore.getDataset();
             });
         });
     }
 
-    getDateString = (date) => {
-        return new Date(date).toDateString();
-    }
+
 
     pruneSameValues = () => {
         const { sampledPatterns } = PatternsStore;
@@ -90,78 +87,40 @@ export default class PatternsView extends React.Component {
         });
     }
 
-    refresh = () => {
-        PatternsStore.setup();
-    }
+    refresh = () => { PatternsStore.getDataset(); }
+
+    getDateString = (date) => { return new Date(date).toDateString(); }
 
     render() {
 
-        const { definedPatterns, sampledPatterns, patternCounts } = PatternsStore;
+        const { definedPatterns, sampledPatterns } = PatternsStore;
 
         return (
             <div>
 
-                {/* Defined stock patterns */}
-                <Segment>
-                    <Header as='h1' content='Defined Stock Patterns' />
-
-                    <Card.Group itemsPerRow={6}>
-                        {definedPatterns.map((pattern, index) => {
-                            return (
-                                <SampleCardGraphContainer
-                                    key={index} title={pattern.name}
-                                    data={Utils.createCoordinateData(pattern.rawValues)}
-                                />
-                            );
-                        })}
-                    </Card.Group>
-                </Segment>
-
                 <Segment>
                     <Grid>
-                        {/* Control Form */}
-
-                        <Grid.Column width={8}>
-                            <Segment>
-                                <Form>
-                                    <Form.Group>
-                                        <Form.Button fluid onClick={this.pruneAll} content='Prune All' />
-                                        <Form.Button fluid onClick={this.pruneSameValues} content='Prune Same Values' />
-                                        <Form.Button fluid onClick={this.refresh} content='Refresh' />
-                                    </Form.Group>
-                                </Form>
-                            </Segment>
-                        </Grid.Column>
-                        <Grid.Column width={8}>
-                            {/* Statistics */}
-                            <Segment>
-                                <Header as='h1' content='Dataset Statistics' />
-                                <Grid columns='equal'>
-
-                                    <Grid.Column>
-                                        <p>{`X < 3 M: ${PatternsStore.small}`}</p>
-                                        <p>{`3 M <= X <= 12 M: ${PatternsStore.med}`}</p>
-                                        <p>{`12 M > X: ${PatternsStore.large}`}</p>
-                                    </Grid.Column>
-
-                                    <Grid.Column>
-                                        {Object.keys(patternCounts).forEach(key => {
-                                            return (
-                                                <p key={key}>
-                                                    {key + ': ' + patternCounts[key]}
-                                                </p>
-                                            )
-                                        })}
-                                    </Grid.Column>
-                                </Grid>
-                            </Segment>
+                        <Grid.Column width={10}>
+                            <Card.Group itemsPerRow={4}>
+                                {definedPatterns.map((pattern, index) => {
+                                    return (<SampleCardGraphContainer
+                                        key={index} title={pattern.name}
+                                        data={Utils.createCoordinateData(pattern.rawValues)}
+                                    />);
+                                })}
+                            </Card.Group>
                         </Grid.Column>
 
+                        <Grid.Column width={6}>
+                            <Form>
+                                <Form.Button fluid onClick={this.pruneAll} content='Prune All' />
+                                <Form.Button fluid onClick={this.pruneSameValues} content='Prune Same Values' />
+                                <Form.Button fluid onClick={this.refresh} content='Refresh' />
+                            </Form>
+                        </Grid.Column>
                     </Grid>
-
                 </Segment>
 
-                {/* Samples */}
                 <Segment>
                     <Header as='h1' content='Training Set used to learn a model through kNN Classifier Algorithm' />
                     <Card.Group itemsPerRow={6}>
@@ -170,12 +129,9 @@ export default class PatternsView extends React.Component {
                                 <Card className='' key={pattern._id.$oid}>
 
                                     <Card.Content><Card.Header>{pattern.name}</Card.Header></Card.Content>
-
                                     <Card.Content>
-                                        <Card.Meta>{`Distance: ${pattern.distance}`}</Card.Meta>
-                                        <Card.Meta>{`Symbol: ${pattern.symbol}`}</Card.Meta>
-                                        <Card.Meta>{`Date: ${this.getDateString(pattern.date)}`}</Card.Meta>
-                                        <Card.Meta>{`Period: ${pattern.period}`}</Card.Meta>
+                                        <Card.Meta>{`Distance: ${pattern.distance} - - Symbol: ${pattern.symbol}`}</Card.Meta>
+                                        <Card.Meta>{`Date: ${this.getDateString(pattern.date)} - - Period: ${pattern.period}`}</Card.Meta>
                                     </Card.Content>
 
                                     <Card.Content>
@@ -219,3 +175,29 @@ export default class PatternsView extends React.Component {
         )
     }
 }
+
+
+/* 
+
+<Segment>
+                                <Header as='h1' content='Dataset Statistics' />
+                                <Grid columns='equal'>
+
+                                    <Grid.Column>
+                                        <p>{`X < 3 M: ${PatternsStore.small}`}</p>
+                                        <p>{`3 M <= X <= 12 M: ${PatternsStore.med}`}</p>
+                                        <p>{`12 M > X: ${PatternsStore.large}`}</p>
+                                    </Grid.Column>
+
+                                    <Grid.Column>
+                                        {Object.keys(patternCounts).forEach(key => {
+                                            return (
+                                                <p key={key}>
+                                                    {key + ': ' + patternCounts[key]}
+                                                </p>
+                                            )
+                                        })}
+                                    </Grid.Column>
+                                </Grid>
+                            </Segment>
+*/

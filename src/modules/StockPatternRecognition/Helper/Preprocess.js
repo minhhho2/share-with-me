@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import PolynomialRegression from 'ml-regression-polynomial';
-import * as Utils from './Utils';
 import PARAMS from '../constants/Params';
 
 /* 
@@ -10,12 +9,8 @@ import PARAMS from '../constants/Params';
 export function normalize(series) {
 
     var parsedTimeSeries = series.slice();
-
-    // Normalize height (prices)
-    parsedTimeSeries = this.normalizePrice(parsedTimeSeries);
-
-    // Normalize length (period)
-    parsedTimeSeries = this.normalizePeriod(parsedTimeSeries);
+    parsedTimeSeries = this.normalizePrice(parsedTimeSeries); // normalize height (price)
+    parsedTimeSeries = this.normalizePeriod(parsedTimeSeries); // normalize length (period)
 
     return parsedTimeSeries;
 }
@@ -27,8 +22,8 @@ export function normalizePrice(series) {
 
     const rMin = _.min(series);
     const rMax = _.max(series);
-    const tMin = PARAMS.normalizeScale.min; // 0
-    const tMax = PARAMS.normalizeScale.max; // 100
+    const tMin = PARAMS.normalizeScale.min;
+    const tMax = PARAMS.normalizeScale.max;
 
     const normalized = series.map(el => {
         return (el - rMin) / (rMax - rMin) * (tMax - tMin) + tMin;
@@ -41,20 +36,35 @@ export function normalizePrice(series) {
     Normalize raw time series of stock price for its period
 */
 export function normalizePeriod(series) {
-    
-    const regression = new PolynomialRegression(_.range(series.length), series, series.length);
 
-    var newLength = PARAMS.resampling.length;
+    const regression = new PolynomialRegression(_.range(series.length), series, series.length - 2);
+
+    const newLength = PARAMS.resampling.length;
+    const xDistance = 1.0 * series.length / newLength;
     var resampledSeries = Array(newLength);
 
-    var xDistance = 1.0 * series.length / newLength; 
-
-    for (var i = 0; i < newLength; i += 1) { // 
-        resampledSeries[i] = regression.predict(i * xDistance);
+    for (var i = 0; i < newLength; i += 1) {
+        resampledSeries[i] = this.predictY(regression, i * xDistance);
     }
-
-    // fix last one always broken
-    resampledSeries[newLength - 1] = regression.predict(Math.floor((newLength - 1) * xDistance));
+    
+    resampledSeries[newLength - 1] = this.predictY(regression, Math.floor((newLength - 1) * xDistance));
 
     return resampledSeries;
+}
+
+
+export function predictY(regression, x) {
+
+    // Prone to negative and massive errors
+    var y = regression.predict(x);
+
+    // Check negative
+    if (y <= PARAMS.normalizeScale.min) { // 0
+        return PARAMS.normalizeScale.min;
+    }
+    if (y >= PARAMS.normalizeScale.max) { // 200
+        return PARAMS.normalizeScale.max;
+    }
+
+    return y;
 }
