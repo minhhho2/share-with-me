@@ -11,7 +11,7 @@ class TimeSeriesApi {
 
     // Make Api Call - example - https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=ASX:XJO&interval=60min&outputsize=full&apikey=${APIKEY}
     get = (period, symbol) => {
-        console.log(`Time Series API for ${period} and ${symbol}`);
+        //console.log(`Time Series API for ${period} and ${symbol}`);
 
         period = 'TIME_SERIES_' + period;
         

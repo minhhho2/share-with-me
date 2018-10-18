@@ -101,6 +101,8 @@ export default class PatternsView extends React.Component {
                 <Segment>
                     <Grid>
                         <Grid.Column width={10}>
+                            <Header as='h1' content='Classes' />
+
                             <Card.Group itemsPerRow={4}>
                                 {definedPatterns.map((pattern, index) => {
                                     return (<SampleCardGraphContainer
@@ -122,7 +124,7 @@ export default class PatternsView extends React.Component {
                 </Segment>
 
                 <Segment>
-                    <Header as='h1' content='Training Set used to learn a model through kNN Classifier Algorithm' />
+                    <Header as='h1' content='Training set' />
                     <Card.Group itemsPerRow={6}>
                         {sampledPatterns.map((pattern) => {
                             return (

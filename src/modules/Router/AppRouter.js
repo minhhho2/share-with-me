@@ -35,12 +35,13 @@ export default class AppRouter extends React.Component {
 
                         {/* semantic UI components for linking to url paths */}
                         <Menu size='massive'>
+                            
+                            {/* 
                             <Menu.Item
                                 name='home' active={activeTab === 'home'}
                                 onClick={AppRouterStore.handleTabClick}
                                 as={Link} to='/'
                             />
-                            {/* 
                             <Menu.Item
                                 name='sector' active={activeTab === 'sector'}
                                 onClick={AppRouterStore.handleTabClick}
@@ -70,8 +71,9 @@ export default class AppRouter extends React.Component {
                         {/* Switch Component that holds Routes */}
                         <br />
                         <Switch>
-                            <Route exact path='/' component={Home} />
                             {/* 
+                           
+                            <Route exact path='/' component={Home} />
                             <Route exact path='/sector' component={SectorView} />
                             <Route exact path='/blog' component={BlogView} />
                             <Route exact path="/blog/:id" component={PostView} />

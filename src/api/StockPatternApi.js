@@ -18,7 +18,7 @@ class StockPatternApi {
         "https://api.mlab.com/api/1/databases/my-db/collections/my-coll?apiKey=myAPIKey"
     */
     create = (data) => {
-        console.log("Creating new pattern");
+        //console.log("Creating new pattern");
 
         const newPattern = {
             name: data.name,

@@ -68,3 +68,20 @@ export function predictY(regression, x) {
 
     return y;
 }
+
+export function normalizePeriodHotFix(series) {
+
+    const regression = new PolynomialRegression(_.range(series.length), series, series.length - 2);
+
+    const newLength = PARAMS.resampling.length;
+    const xDistance = 1.0 * series.length / newLength;
+    var resampledSeries = Array(newLength);
+
+    for (var i = 0; i < newLength; i += 1) {
+        resampledSeries[i] = regression.predict(i * xDistance);
+    }
+    
+    resampledSeries[newLength - 1] = regression.predict(Math.floor((newLength - 1) * xDistance));
+
+    return resampledSeries;
+}

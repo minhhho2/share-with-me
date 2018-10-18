@@ -33,7 +33,7 @@ export default class TimeSeriesView extends React.Component {
         var series = timeseriesGraphData.map(value => {
             return value.y;
         })
-        console.log(series);
+
         return (
             <Segment className='bg-light'>
 

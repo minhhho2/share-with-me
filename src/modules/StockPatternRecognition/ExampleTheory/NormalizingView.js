@@ -22,7 +22,7 @@ export default class NormalizingView extends React.Component {
         var samplePeriod = Preprocess.normalizePeriod(sample);
 
         var labelPrice = Preprocess.normalizePrice(label);
-        var labelPeriod = Preprocess.normalizePeriod(label);
+        var labelPeriod = Preprocess.normalizePeriodHotFix(label);
 
         var parsedSample = Preprocess.normalize(sample);
         var parsedLabel = Preprocess.normalize(label);
@@ -33,7 +33,7 @@ export default class NormalizingView extends React.Component {
                     <Grid columns={2}>
 
                         <Grid.Column width={8}>
-                            <Header as='h2'> Original price and period: {Classifier.distance(sample, label)}</Header>
+                            <Header as='h2'> Original price and period: {Classifier.distance(sample, label).toFixed(2)}</Header>
                             <FlexibleWidthXYPlot height={200}>
                                 <XAxis />
                                 <YAxis />
@@ -49,7 +49,7 @@ export default class NormalizingView extends React.Component {
                         </Grid.Column>
 
                         <Grid.Column width={8}>
-                            <Header as='h2'> Normalize price and original period: {Classifier.distance(samplePrice, labelPrice)}</Header>
+                            <Header as='h2'> Normalize price and original period: {Classifier.distance(samplePrice, labelPrice).toFixed(2)}</Header>
                             <FlexibleWidthXYPlot height={200}>
                                 <XAxis />
                                 <YAxis />
@@ -64,7 +64,7 @@ export default class NormalizingView extends React.Component {
                             </FlexibleWidthXYPlot>
                         </Grid.Column>
                         <Grid.Column width={8}>
-                            <Header as='h2'> Original price and normalize period: {Classifier.distance(samplePeriod, labelPeriod)}</Header>
+                            <Header as='h2'> Original price and normalize period: {Classifier.distance(samplePeriod, labelPeriod).toFixed(2)}</Header>
                             <FlexibleWidthXYPlot height={200}>
                                 <XAxis />
                                 <YAxis />
@@ -80,7 +80,7 @@ export default class NormalizingView extends React.Component {
                         </Grid.Column>
 
                         <Grid.Column width={8}>
-                        <Header as='h2'> Normalize price and period: {Classifier.distance(parsedSample, parsedLabel)}</Header>
+                        <Header as='h2'> Normalize price and period: {Classifier.distance(parsedSample, parsedLabel).toFixed(2)}</Header>
                             <FlexibleWidthXYPlot height={200}>
                                 <XAxis />
                                 <YAxis />

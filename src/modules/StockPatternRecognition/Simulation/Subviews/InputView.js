@@ -41,7 +41,7 @@ export default class InputView extends React.Component {
                 
                 // Get 1000 only for daily TODO: REMOVE FOR RESULTS
                 if (timeSeriesPriceKey === 'Time Series (Daily)') {
-                    TimeSeriesStore.data = TimeSeriesStore.data.slice(-500);
+                    //TimeSeriesStore.data = TimeSeriesStore.data.slice(-500);
                 }
 
                 TimeSeriesStore.updateAttributes();
